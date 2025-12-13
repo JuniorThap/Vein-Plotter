@@ -65,7 +65,7 @@ while True:
     # -----------------------------
     # 1. Capture WITHOUT IR
     # -----------------------------
-    if key == ord(' '):
+    if key == ord('1'):
         GPIO.output(IR_PIN, GPIO.HIGH)  # IR OFF
 
         filename = f"person_{PERSON_ID:03d}_{HAND_LABEL[counter%2]}_NoIR.png"
@@ -77,8 +77,8 @@ while True:
     # -----------------------------
     # 2. Capture WITH IR
     # -----------------------------
+    if key == ord('2'):
         GPIO.output(IR_PIN, GPIO.LOW)   # IR ON
-        time.sleep(1)
 
         frame_ir = picam2.capture_array()
         filename = f"person_{PERSON_ID:03d}_{HAND_LABEL[counter%2]}_IR.png"
@@ -95,6 +95,7 @@ while True:
         counter += 1
         if counter % 2 == 0:
             PERSON_ID += 1
+    time.sleep(1)
 
     # -----------------------------
     # Quit Program
