@@ -1,10 +1,9 @@
 # servo_motor.py
 
 import time
-import RPi.GPIO as GPIO
+import pigpio
 from hardware_config import (
     SERVO_PIN,
-    SERVO_FREQ_HZ,
     SERVO_MIN_DUTY,
     SERVO_MAX_DUTY,
     LIMIT_SWITCH_PIN,
@@ -13,37 +12,47 @@ from hardware_config import (
 
 class ServoWithLimit:
     """
-    Simple servo driver using RPi.GPIO PWM + limit switch.
-
-    Limit switch is assumed:
-      - Active LOW (pressed = 0)
-      - Connected to LIMIT_SWITCH_PIN with pull-up
+    Servo controller using pigpio for stable PWM + limit switch protection.
+    
+    pigpio sends pulses by microseconds (500–2500 typically), which is
+    far more accurate and stable than RPi.GPIO PWM.
     """
 
     def __init__(self):
-        GPIO.setup(SERVO_PIN, GPIO.OUT)
-        GPIO.setup(LIMIT_SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        self.pi = pigpio.pi()
+        if not self.pi.connected:
+            raise RuntimeError("pigpio daemon is not running")
 
-        self.pwm = GPIO.PWM(SERVO_PIN, SERVO_FREQ_HZ)
-        self.pwm.start(0)
+        # Limit switch
+        self.pi.set_mode(LIMIT_SWITCH_PIN, pigpio.INPUT)
+        self.pi.set_pull_up_down(LIMIT_SWITCH_PIN, pigpio.PUD_UP)
 
-        self.min_duty = SERVO_MIN_DUTY
-        self.max_duty = SERVO_MAX_DUTY
+        # Servo pin
+        self.pi.set_mode(SERVO_PIN, pigpio.OUTPUT)
+
+        # Convert duty-cycle style config → microseconds
+        # 50 Hz = 20 ms → 2.5% = 500 μs, 12.5% = 2500 μs
+        self.min_us = int(20000 * (SERVO_MIN_DUTY / 100.0))
+        self.max_us = int(20000 * (SERVO_MAX_DUTY / 100.0))
+
         self.current_angle = 0.0
+        self.set_angle(0)  # initialize
 
-    def angle_to_duty(self, angle_deg: float) -> float:
+    def angle_to_pulse(self, angle_deg: float) -> int:
         angle_clamped = max(0.0, min(180.0, angle_deg))
-        duty = self.min_duty + (angle_clamped / 180.0) * (self.max_duty - self.min_duty)
-        return duty
+        return int(self.min_us + (angle_clamped / 180.0) * (self.max_us - self.min_us))
 
     def set_angle(self, angle_deg: float, settle_time: float = 0.3):
         """
-        Move servo to a specific angle (no limit-check here).
+        Move to a specific angle (blocking).
+        pigpio: use set_servo_pulsewidth(pin, microseconds)
         """
-        duty = self.angle_to_duty(angle_deg)
-        self.pwm.ChangeDutyCycle(duty)
+        pulse = self.angle_to_pulse(angle_deg)
+        self.pi.set_servo_pulsewidth(SERVO_PIN, pulse)
         time.sleep(settle_time)
-        self.pwm.ChangeDutyCycle(0.0)  # stop sending continuous pulses (optional)
+
+        # keep pulse ON → servos like continuous pulses
+        # (we do NOT stop pulse as in RPi.GPIO version)
         self.current_angle = angle_deg
 
     def sweep_until_limit(
@@ -53,26 +62,28 @@ class ServoWithLimit:
         step_delay: float = 0.05,
     ):
         """
-        Move servo in small steps in `direction` until limit switch is hit.
-        direction: +1 or -1
+        Sweep servo in direction until limit switch is hit.
+        direction: +1 = increase angle, -1 = decrease angle
         """
+
         angle = self.current_angle
 
         while 0.0 <= angle <= 180.0:
-            # Check limit switch (active LOW)
-            if GPIO.input(LIMIT_SWITCH_PIN) == 0:
-                print("Limit switch triggered, stopping servo.")
+            # check limit switch (active LOW)
+            if self.pi.read(LIMIT_SWITCH_PIN) == 0:
+                print("Limit switch triggered → stopping servo.")
                 break
 
             angle += direction * step_deg
             angle = max(0.0, min(180.0, angle))
 
-            duty = self.angle_to_duty(angle)
-            self.pwm.ChangeDutyCycle(duty)
+            pulse = self.angle_to_pulse(angle)
+            self.pi.set_servo_pulsewidth(SERVO_PIN, pulse)
             time.sleep(step_delay)
 
-        self.pwm.ChangeDutyCycle(0.0)
         self.current_angle = angle
 
     def cleanup(self):
-        self.pwm.stop()
+        # stop sending pulses
+        self.pi.set_servo_pulsewidth(SERVO_PIN, 0)
+        self.pi.stop()
