@@ -80,22 +80,20 @@ while True:
     if key == ord('1'):
         hand, mode = CAPTURE_SEQUENCE[seq_idx]
 
-        if mode == "NoIR":
-            GPIO.output(IR_PIN, GPIO.LOW)
-            time.sleep(4)
+        GPIO.output(IR_PIN, GPIO.LOW)
+        time.sleep(1)
 
-            filename = f"person_{PERSON_ID:03d}_{hand}_NoIR.png"
-            cv2.imwrite(os.path.join(folder, filename), frame)
+        filename = f"person_{PERSON_ID:03d}_{hand}_NoIR.png"
+        cv2.imwrite(os.path.join(folder, filename), frame)
 
-        else:  # IR
-            GPIO.output(IR_PIN, GPIO.HIGH)
-            time.sleep(4)
+        GPIO.output(IR_PIN, GPIO.HIGH)
+        time.sleep(4)
 
-            frame_ir = picam2.capture_array()
-            filename = f"person_{PERSON_ID:03d}_{hand}_IR.png"
-            cv2.imwrite(os.path.join(folder, filename), frame_ir)
+        frame_ir = picam2.capture_array()
+        filename = f"person_{PERSON_ID:03d}_{hand}_IR.png"
+        cv2.imwrite(os.path.join(folder, filename), frame_ir)
 
-            GPIO.output(IR_PIN, GPIO.LOW)
+        GPIO.output(IR_PIN, GPIO.LOW)
 
         print(f"[Saved] {filename}")
 
