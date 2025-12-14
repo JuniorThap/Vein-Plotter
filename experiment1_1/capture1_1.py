@@ -24,6 +24,7 @@ def get_next_person_id(folder):
     return max_id + 1
 
 PERSON_ID = get_next_person_id(folder)
+print("Current NEXT_ID:", PERSON_ID)
 
 # Capture sequence per person
 CAPTURE_SEQUENCE = [
