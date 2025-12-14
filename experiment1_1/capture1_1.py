@@ -97,7 +97,7 @@ while True:
 
         print(f"[Saved] {filename}")
 
-        seq_idx += 1
+        seq_idx += 2
 
         # After 4 captures → next person
         if seq_idx == 4:
