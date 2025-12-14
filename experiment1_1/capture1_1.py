@@ -30,7 +30,7 @@ counter = 0
 PERSON_ID = get_next_person_id(folder)
 HAND_LABEL = ["L1", "R1"]   # L1, R1, etc.
 
-IR_PIN = 17         # GPIO pin for Relay
+IR_PIN = 18         # GPIO pin for Relay
 
 
 # -----------------------------
@@ -38,7 +38,7 @@ IR_PIN = 17         # GPIO pin for Relay
 # -----------------------------
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(IR_PIN, GPIO.OUT)
-GPIO.output(IR_PIN, GPIO.HIGH)   # Relay OFF initially
+GPIO.output(IR_PIN, GPIO.LOW)   # Relay OFF initially
 
 # -----------------------------
 # Camera Setup
@@ -67,8 +67,8 @@ while True:
     # 1. Capture WITHOUT IR
     # -----------------------------
     if key == ord('1'):
-        GPIO.output(IR_PIN, GPIO.HIGH)  # IR OFF
-
+        GPIO.output(IR_PIN, GPIO.LOW)  # IR OFF
+        time.sleep(5)
         filename = f"person_{PERSON_ID:03d}_{HAND_LABEL[counter%2]}_NoIR.png"
         filepath = os.path.join(folder, filename)
         cv2.imwrite(filepath, frame)
@@ -79,8 +79,8 @@ while True:
     # 2. Capture WITH IR
     # -----------------------------
     if key == ord('2'):
-        GPIO.output(IR_PIN, GPIO.LOW)   # IR ON
-
+        GPIO.output(IR_PIN, GPIO.HIGH)   # IR ON
+        time.sleep(5)
         frame_ir = picam2.capture_array()
         filename = f"person_{PERSON_ID:03d}_{HAND_LABEL[counter%2]}_IR.png"
         filepath = os.path.join(folder, filename)
@@ -88,7 +88,7 @@ while True:
 
         print(f"[Saved] {filepath}")
 
-        GPIO.output(IR_PIN, GPIO.HIGH)  # Turn IR OFF after capture
+        GPIO.output(IR_PIN, GPIO.LOW)  # Turn IR OFF after capture
         
     # -----------------------------
     # 3. Update Counter
