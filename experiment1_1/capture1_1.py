@@ -4,16 +4,13 @@ import RPi.GPIO as GPIO
 import cv2
 import time
 import os
-from datetime import datetime
 
 # -----------------------------
 # CREATE EXPERIMENT FOLDER
 # -----------------------------
 folder = "experiment"
 os.makedirs(folder, exist_ok=True)
-
 print(f"Saving images to folder: {folder}")
-
 
 # -----------------------------
 # USER SETTINGS
@@ -26,19 +23,26 @@ def get_next_person_id(folder):
             max_id = max(max_id, pid)
     return max_id + 1
 
-counter = 0
 PERSON_ID = get_next_person_id(folder)
-HAND_LABEL = ["L1", "R1"]   # L1, R1, etc.
 
-IR_PIN = 18         # GPIO pin for Relay
+# Capture sequence per person
+CAPTURE_SEQUENCE = [
+    ("L1", "NoIR"),
+    ("L1", "IR"),
+    ("R1", "NoIR"),
+    ("R1", "IR"),
+]
 
+seq_idx = 0  # 0–3 per person
+
+IR_PIN = 18  # GPIO pin for Relay
 
 # -----------------------------
 # GPIO Setup
 # -----------------------------
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(IR_PIN, GPIO.OUT)
-GPIO.output(IR_PIN, GPIO.LOW)   # Relay OFF initially
+GPIO.output(IR_PIN, GPIO.LOW)  # IR OFF initially
 
 # -----------------------------
 # Camera Setup
@@ -47,16 +51,22 @@ picam2 = Picamera2()
 config = picam2.create_preview_configuration(
     main={"format": "RGB888", "size": (640, 480)}
 )
-picam2.set_controls({"AfMode": controls.AfModeEnum.Manual, "LensPosition": 1})   # Manual Foscus about 15cm
+picam2.set_controls({
+    "AfMode": controls.AfModeEnum.Manual,
+    "LensPosition": 1   # ~15–20 cm (adjust if needed)
+})
 picam2.configure(config)
 picam2.start()
 
 print("=========================================")
 print("VEIN SCANNER CONTROL")
-print("Press \"SPACEBAR\" : Capture NoIR (IR OFF) and IR (IR ON)")
+print("Press '1' : Capture (L/R × IR/NoIR auto)")
 print("Press 'q' : Quit")
 print("=========================================")
 
+# -----------------------------
+# MAIN LOOP
+# -----------------------------
 while True:
     frame = picam2.capture_array()
     cv2.imshow("Camera", frame)
@@ -64,47 +74,49 @@ while True:
     key = cv2.waitKey(1) & 0xFF
 
     # -----------------------------
-    # 1. Capture WITHOUT IR
+    # CAPTURE STEP
     # -----------------------------
     if key == ord('1'):
-        GPIO.output(IR_PIN, GPIO.LOW)  # IR OFF
-        time.sleep(5)
-        filename = f"person_{PERSON_ID:03d}_{HAND_LABEL[counter%2]}_NoIR.png"
-        filepath = os.path.join(folder, filename)
-        cv2.imwrite(filepath, frame)
+        hand, mode = CAPTURE_SEQUENCE[seq_idx]
 
-        print(f"[Saved] {filepath}")
+        if mode == "NoIR":
+            GPIO.output(IR_PIN, GPIO.LOW)
+            time.sleep(0.5)
 
-    # -----------------------------
-    # 2. Capture WITH IR
-    # -----------------------------
-    if key == ord('2'):
-        GPIO.output(IR_PIN, GPIO.HIGH)   # IR ON
-        time.sleep(5)
-        frame_ir = picam2.capture_array()
-        filename = f"person_{PERSON_ID:03d}_{HAND_LABEL[counter%2]}_IR.png"
-        filepath = os.path.join(folder, filename)
-        cv2.imwrite(filepath, frame_ir)
+            filename = f"person_{PERSON_ID:03d}_{hand}_NoIR.png"
+            cv2.imwrite(os.path.join(folder, filename), frame)
 
-        print(f"[Saved] {filepath}")
+        else:  # IR
+            GPIO.output(IR_PIN, GPIO.HIGH)
+            time.sleep(0.5)
 
-        GPIO.output(IR_PIN, GPIO.LOW)  # Turn IR OFF after capture
-        
-    # -----------------------------
-    # 3. Update Counter
-    # -----------------------------
-        counter += 1
-        if counter % 2 == 0:
+            frame_ir = picam2.capture_array()
+            filename = f"person_{PERSON_ID:03d}_{hand}_IR.png"
+            cv2.imwrite(os.path.join(folder, filename), frame_ir)
+
+            GPIO.output(IR_PIN, GPIO.LOW)
+
+        print(f"[Saved] {filename}")
+
+        seq_idx += 1
+
+        # After 4 captures → next person
+        if seq_idx == 4:
+            seq_idx = 0
             PERSON_ID += 1
-    time.sleep(1)
+            print(f"=== NEXT PERSON: {PERSON_ID:03d} ===")
+
+        time.sleep(1)
 
     # -----------------------------
-    # Quit Program
+    # QUIT
     # -----------------------------
     if key == ord('q'):
         break
 
+# -----------------------------
+# CLEANUP
+# -----------------------------
 cv2.destroyAllWindows()
 GPIO.cleanup()
 picam2.stop()
-
