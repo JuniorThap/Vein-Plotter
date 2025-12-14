@@ -81,14 +81,14 @@ while True:
 
         if mode == "NoIR":
             GPIO.output(IR_PIN, GPIO.LOW)
-            time.sleep(0.5)
+            time.sleep(4)
 
             filename = f"person_{PERSON_ID:03d}_{hand}_NoIR.png"
             cv2.imwrite(os.path.join(folder, filename), frame)
 
         else:  # IR
             GPIO.output(IR_PIN, GPIO.HIGH)
-            time.sleep(0.5)
+            time.sleep(4)
 
             frame_ir = picam2.capture_array()
             filename = f"person_{PERSON_ID:03d}_{hand}_IR.png"
