@@ -8,7 +8,7 @@ LIMIT_SWITCH_PIN = 6    # Servo limit switch (active LOW)
 IR_PIN = 9
 
 # ---------------- STEPPER X ----------------
-STEPPER_X_DIR = 6
+STEPPER_X_DIR = 12
 STEPPER_X_STEP = 5
 
 # ---------------- STEPPER Y ----------------
