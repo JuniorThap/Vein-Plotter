@@ -24,7 +24,7 @@ class StepperAxis:
         GPIO.setup(dir_pin, GPIO.OUT)
         GPIO.setup(step_pin, GPIO.OUT)
         GPIO.setup(en_pin, GPIO.OUT)
-        GPIO.setup(homing_pin, GPIO.IN)
+        GPIO.setup(homing_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         GPIO.output(en_pin, GPIO.HIGH)  # disable initially
 
@@ -87,3 +87,7 @@ class Motion2D:
     def set_offset(self, offset_x, offset_y):
         self.x.offset = offset_x
         self.y.offset = offset_y
+
+    def move_dir(self, dir_x, dir_y):
+        x_mm, y_mm = self.get_position()
+        self.move_to(x_mm+dir_x, y_mm+dir_y)

@@ -360,16 +360,27 @@ def extract_hand_contour(gray):
 
     contours, _ = cv2.findContours(hand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    return contours
+    filtered = []
+    for c in contours:
+        if cv2.contourArea(c) >= 20000:
+            filtered.append(filtered)
+
+    return filtered
+
+def filter_near_hand_edge(lines, hand_contour, margin=15):
+    filtered = []
+    for line in lines:
+        edge_dist = min_distance_from_center_to_contour(line["points"], hand_contour)
+        if edge_dist < margin:
+            continue
+        filtered.append(line)
+    return filtered
 
 def score_vein(
     line,
-    hand_mask=None,
     w_len=0.7,
     w_err=0, # 0.6
     w_ang=1,
-    w_edge=1,
-    margin=10
 ):
     """
     Higher score = better vein
@@ -390,16 +401,9 @@ def score_vein(
         w_ang * ang_score
     )
 
-    # optional safety term
-    if hand_mask is not None:
-        edge_dist = min_distance_from_center_to_contour(line["points"], hand_mask)
-        score += w_edge * edge_dist
-        if edge_dist < margin:
-            score = -1
-
     return score
 
-def select_top_vein(lines, hand_mask=None, k=3):
+def select_top_vein(lines, k=3):
     if lines is None:
         return None
     if len(lines) == 0:
@@ -407,14 +411,12 @@ def select_top_vein(lines, hand_mask=None, k=3):
 
     scored = []
     for line in lines:
-        s = score_vein(line, hand_mask)
+        s = score_vein(line)
         scored.append((s, line))
 
     scored.sort(key=lambda x: x[0], reverse=True)
     top = []
     for score, line in scored[:k]:
-        if score < 0:
-            continue
         line = line.copy()
         line["score"] = score
         top.append(line)
@@ -582,7 +584,8 @@ def pipeline(model, img):
         if core is not None:
             trimmed.append(core)
     
-    hand = extract_hand_contour(img)
-    top_lines =  select_top_vein(trimmed, hand[0], k=1)
+    hand_contours = extract_hand_contour(img)
+    filtered = filter_near_hand_edge(trimmed, hand_contours[0], 50)
+    top_lines =  select_top_vein(filtered, k=3)
     
     return plot_vein(img, trimmed), top_lines
