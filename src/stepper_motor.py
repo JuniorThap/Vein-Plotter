@@ -25,13 +25,6 @@ class StepperAxis:
         GPIO.setup(step_pin, GPIO.OUT)
         GPIO.setup(homing_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-
-    def enable(self):
-        GPIO.output(self.en_pin, GPIO.LOW)
-
-    def disable(self):
-        GPIO.output(self.en_pin, GPIO.HIGH)
-
     def move_to(self, target_mm):
         delta = (target_mm + self.offset) - self.position_mm
         if delta == 0:
@@ -40,7 +33,6 @@ class StepperAxis:
         direction = GPIO.HIGH if delta > 0 else GPIO.LOW
         steps = int(abs(delta) * self.steps_per_1_8mm / 1.8)
 
-        self.enable()
         GPIO.output(self.dir_pin, direction)
 
         for _ in range(steps):
@@ -48,8 +40,7 @@ class StepperAxis:
             time.sleep(STEP_DELAY_SEC)
             GPIO.output(self.step_pin, GPIO.LOW)
             time.sleep(STEP_DELAY_SEC)
-
-        self.disable()
+            
         self.position_mm = target_mm
     
     def homing(self):
