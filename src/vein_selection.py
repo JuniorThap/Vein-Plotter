@@ -334,22 +334,41 @@ def angle_to_vertical(direction):
     cos = np.clip(abs(np.dot(d, vertical)), 0, 1)
     return np.degrees(np.arccos(cos))
 
-def mean_distance_from_edge(points, hand_mask):
-    dist = cv2.distanceTransform(
-        cv2.bitwise_not(hand_mask.astype(np.uint8)),
-        cv2.DIST_L2,
-        5
+import numpy as np
+
+def min_distance_from_center_to_contour(points, hand_contour):
+    pts = points.astype(np.float32)
+    center = np.mean(pts, axis=0)
+    contour = hand_contour.reshape(-1, 2).astype(np.float32)
+    dists = np.linalg.norm(contour - center, axis=1)
+    return float(np.min(dists))
+
+
+def extract_hand_contour(gray):
+    # Otsu threshold to separate hand from background
+    _, hand = cv2.threshold(
+        gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
     )
-    pts = points.astype(int)
-    return np.mean([dist[y, x] for x, y in pts])
+
+    # Ensure hand is white
+    if np.mean(gray[hand == 255]) < np.mean(gray[hand == 0]):
+        hand = cv2.bitwise_not(hand)
+
+    # Fill holes
+    kernel = np.ones((7,7), np.uint8)
+    hand = cv2.morphologyEx(hand, cv2.MORPH_CLOSE, kernel, iterations=3)
+
+    contours, _ = cv2.findContours(hand, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    return contours
 
 def score_vein(
     line,
     hand_mask=None,
-    w_len=1.0,
-    w_err=0.6,
-    w_ang=0.4,
-    w_edge=0.3
+    w_len=0.7,
+    w_err=0, # 0.6
+    w_ang=1,
+    w_edge=1
 ):
     """
     Higher score = better vein
@@ -372,7 +391,7 @@ def score_vein(
 
     # optional safety term
     if hand_mask is not None:
-        edge_dist = mean_distance_from_edge(line["points"], hand_mask)
+        edge_dist = min_distance_from_center_to_contour(line["points"], hand_mask)
         score += w_edge * edge_dist
 
     return score
@@ -545,7 +564,7 @@ def pipeline(model, img):
     input = input.to(device)
     
     with torch.no_grad():
-        mask = model(input).numpy().squeeze() > 0.5
+        mask = model(input).detach().cpu().squeeze().numpy() > 0.5
     img = depad(img, pad_h, pad_w)
     mask = depad(mask, pad_h, pad_w)
 
@@ -558,6 +577,7 @@ def pipeline(model, img):
         if core is not None:
             trimmed.append(core)
     
-    top_lines =  select_top_vein(trimmed, None, k=1)
+    hand = extract_hand_contour(img)
+    top_lines =  select_top_vein(trimmed, hand[0], k=1)
     
     return plot_vein(img, trimmed), top_lines
