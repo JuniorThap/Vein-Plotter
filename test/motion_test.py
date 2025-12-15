@@ -25,9 +25,9 @@ while True:
     elif key == ord('a'):
         print('a')
         dx = -1
-    # elif key == ord('d'):
-    #     print('d')
-    #     dx = 1
+    elif key == ord('d'):
+        print('d')
+        dx = 1
     elif key == ord('q'):
         print("Quit")
         break
