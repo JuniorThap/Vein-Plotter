@@ -9,7 +9,7 @@ servo = ServoWithLimit()
 cv2.namedWindow("control", cv2.WINDOW_NORMAL)
 cv2.imshow("control", np.zeros((100, 300), dtype=np.uint8))
 
-print("Click the window. WASD to move, Q to quit")
+print("Click the window. WASD to move, QE for servo, Z to quit")
 
 while True:
     key = cv2.waitKey(1) & 0xFF
@@ -22,8 +22,7 @@ while True:
     elif key == ord('s'):
         print('s')
         dy = -1
-    
-    if key == ord('a'):
+    elif key == ord('a'):
         print('a')
         dx = -1
     elif key == ord('d'):
