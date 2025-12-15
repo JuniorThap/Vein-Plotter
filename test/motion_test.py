@@ -15,18 +15,22 @@ while True:
     dx, dy = 0, 0
 
     if key == ord('w'):
+        print('w')
         dy = 1
     elif key == ord('s'):
+        print('s')
         dy = -1
     elif key == ord('a'):
+        print('a')
         dx = -1
     elif key == ord('d'):
+        print('d')
         dx = 1
     elif key == ord('q'):
         print("Quit")
         break
 
     if dx != 0 or dy != 0:
-        motion.dir(dx, dy)
+        motion.move_dir(dx, dy)
 
 cv2.destroyAllWindows()
