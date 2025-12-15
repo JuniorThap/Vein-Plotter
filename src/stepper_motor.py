@@ -31,7 +31,7 @@ class StepperAxis:
         rad_per_step = degree_per_step / 180 * math.pi
         mm_per_step = rad_per_step * 12
         steps = mm / mm_per_step
-        return steps
+        return int(steps)
 
     def move_to(self, target_mm):
         delta = (target_mm + self.offset) - self.position_mm
