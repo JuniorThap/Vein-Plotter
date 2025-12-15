@@ -6,7 +6,8 @@ import RPi.GPIO as GPIO
 from hardware_config import BUTTON_PIN
 from stepper_motor import Motion2D
 from servo_motor import ServoWithLimit
-from image_pipeline import capture_image, detect_vein_entry_and_trajectory
+from vein_selection import build_model
+from image_pipeline import camera_setup, capture_image, detect_vein_entry_and_trajectory
 from mapping import map_vein_to_motion
 
 
@@ -47,6 +48,9 @@ def main():
 
     motion = Motion2D()
     servo = ServoWithLimit()
+
+    build_model(r"pretrained_unet_vein.pth")
+    camera_setup()
 
     try:
         while True:
