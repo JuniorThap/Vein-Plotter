@@ -7,6 +7,7 @@ from stepper_motor import Motion2D
 from servo_motor import ServoWithLimit
 from vein_selection import build_model
 from image_pipeline import Camera
+from stepper_calibration import StepperCalibration
 from mapping import map_vein_to_motion
 import cv2
 import os
@@ -83,12 +84,17 @@ def main():
     motion = Motion2D()
     servo = ServoWithLimit()
     camera = Camera()
+    calibrate = StepperCalibration()
 
     build_model(r"pretrained_unet_vein.pth")
 
     folder = "experiment2"
     os.makedirs(folder, exist_ok=True)
     print(f"Saving images to folder: {folder}")
+
+    time.sleep(5)
+    print("Start Calibration")
+    calibrate.calibrate(force=False)
 
     try:
         while True:
