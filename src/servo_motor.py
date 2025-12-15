@@ -2,7 +2,7 @@
 
 import time
 import pigpio
-from hardware_config import (
+from src.hardware_config import (
     SERVO_PIN,
     SERVO_MIN_DUTY,
     SERVO_MAX_DUTY,
