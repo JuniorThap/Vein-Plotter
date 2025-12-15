@@ -40,7 +40,7 @@ class StepperAxis:
 
         direction = GPIO.HIGH if delta > 0 else GPIO.LOW
         # steps = int(abs(delta) * self.steps_per_1_8deg / 1.8)
-        steps = self.calculate_step(abs(delta))
+        steps = self.mm2step(abs(delta))
 
         GPIO.output(self.dir_pin, direction)
 
