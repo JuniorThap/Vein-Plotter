@@ -7,7 +7,7 @@ from hardware_config import BUTTON_PIN
 from stepper_motor import Motion2D
 from servo_motor import ServoWithLimit
 from vein_selection import build_model
-from image_pipeline import camera_setup, capture_image, detect_vein_entry_and_trajectory
+from image_pipeline import Camera
 from mapping import map_vein_to_motion
 
 
@@ -19,26 +19,24 @@ def wait_for_button_press():
     while GPIO.input(BUTTON_PIN) == GPIO.LOW:
         time.sleep(0.01)
 
+def reset(motion: Motion2D, servo: ServoWithLimit):
+    servo.set_angle(0)
+    motion.homing()
 
-def perform_cycle(motion: Motion2D, servo: ServoWithLimit):
-    # 1. Capture image
-    img = capture_image()
+def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera):
+    img = camera.capture_image()
+    vein = camera.detect_vein_points(img)
 
-    # 2. Process image → detect vein entry
-    vein = detect_vein_entry_and_trajectory(img)
-
-    # 3. Mapping to real positions
-    target = map_vein_to_motion(vein)
-
+    target = map_vein_to_motion(vein, index=0)
     print(f"Target → X={target.x_mm:.2f} mm, Y={target.y_mm:.2f} mm, Servo={target.servo_angle_deg:.1f}°")
-
-    # 4. Two-axis stepping
     motion.move_to(target.x_mm, target.y_mm)
+    servo.sweep_until_limit(direction=1)
 
-    # 5. Set servo to angle
-    servo.set_angle(target.servo_angle_deg)
+    servo.set_angle(0)
 
-    # 6. Sweep until limit switch
+    target = map_vein_to_motion(vein, index=1)
+    print(f"Target → X={target.x_mm:.2f} mm, Y={target.y_mm:.2f} mm, Servo={target.servo_angle_deg:.1f}°")
+    motion.move_to(target.x_mm, target.y_mm)
     servo.sweep_until_limit(direction=1)
 
 
@@ -48,15 +46,15 @@ def main():
 
     motion = Motion2D()
     servo = ServoWithLimit()
+    camera = Camera()
 
     build_model(r"pretrained_unet_vein.pth")
-    camera_setup()
 
     try:
         while True:
             wait_for_button_press()
             try:
-                perform_cycle(motion, servo)
+                perform_cycle(motion, servo, camera)
             except NotImplementedError as e:
                 print("Missing implementation:", e)
 

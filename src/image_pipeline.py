@@ -2,55 +2,88 @@
 
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, List, Tuple
 from picamera2 import Picamera2, Preview
 from libcamera import controls
 import RPi.GPIO as GPIO
 import cv2
 import time
 import os
-from vein_selection import build_model, pipeline
+from vein_selection import pipeline
+from hardware_config import IR_PIN
+import numpy as np
 
+
+Point = Tuple[float, float]
 
 @dataclass
 class VeinDetectionResult:
-    """
-    Logical representation of what you need from the image.
-    You can customize this.
-    """
-    x1_px: float
-    y1_px: float
-    x2_px: float
-    y2_px: float
+    points_px: List[Point]   # [(x, y), (x, y), ...]
     image: Any
 
+class Camera():
 
-def camera_setup():
-    picam2 = Picamera2()
-    config = picam2.create_preview_configuration(
-        main={"format": "RGB888", "size": (640, 480)}
-    )
-    picam2.set_controls({
-        "AfMode": controls.AfModeEnum.Manual,
-        "LensPosition": 1   # ~15–20 cm (adjust if needed)
-    })
-    picam2.configure(config)
-    picam2.start()
+    def __init__(self):
+        self.ir_pin = IR_PIN
+        picam2 = Picamera2()
+        config = picam2.create_preview_configuration(
+            main={"format": "RGB888", "size": (640, 480)}
+        )
+        picam2.set_controls({
+            "AfMode": controls.AfModeEnum.Manual,
+            "LensPosition": 1   # ~15–20 cm (adjust if needed)
+        })
+        picam2.configure(config)
+        picam2.start()
 
-    return picam2
-
-def capture_image(picam2, show=False):
-    frame = picam2.capture_array()
-
-    if show:
-        cv2.imshow("Camera", frame)
-        cv2.waitKey(1)
-
-    return frame
+        GPIO.setup(IR_PIN, GPIO.OUT)
+        GPIO.output(IR_PIN, GPIO.HIGH)
 
 
+    def capture_image(self, show=False):
+        frame = self.picam2.capture_array()
 
-def detect_vein_entry_and_trajectory(model, image) -> VeinDetectionResult:
-    img, lines = pipeline(model, image)
-    pts = lines[0]["points"]
-    return VeinDetectionResult(pts[0][0], pts[0][1], pts[-1][0], pts[-1][1], img)
+        if show:
+            cv2.imshow("Camera", frame)
+            cv2.waitKey(1)
+
+        return frame
+
+    def detect_vein_points(self, model, image) -> VeinDetectionResult:
+        img, lines = pipeline(model, image)
+        pts = lines[0]["points"]
+        return VeinDetectionResult([(pts[0][0], pts[0][1]), (pts[-1][0], pts[-1][1])], img)
+    
+    def detect_dot(self, image, lower=[114, 90, 3], upper=[134, 170, 83]):
+        lower = np.array(lower)
+        upper = np.array(upper)
+
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+        mask = cv2.inRange(hsv, lower, upper)
+
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        centers = []
+
+        for cnt in contours:
+            M = cv2.moments(cnt)
+            if M["m00"] == 0:
+                continue
+
+            cx = int(M["m10"] / M["m00"])
+            cy = int(M["m01"] / M["m00"])
+
+            centers.append((cx, cy))
+
+        masked = cv2.bitwise_and(image, image, mask=mask)
+
+        return centers, masked
+
+    def turn_ir_on(self):
+        GPIO.output(self.ir_pin, GPIO.HIGH)
+    
+    def turn_ir_off(self):
+        GPIO.output(self.ir_pin, GPIO.LOW)
+
+        
