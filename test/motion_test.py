@@ -1,8 +1,10 @@
 from src.stepper_motor import Motion2D
+from src.servo_motor import ServoWithLimit
 import cv2
 import numpy as np
 
 motion = Motion2D()
+servo = ServoWithLimit()
 
 cv2.namedWindow("control", cv2.WINDOW_NORMAL)
 cv2.imshow("control", np.zeros((100, 300), dtype=np.uint8))
@@ -20,13 +22,20 @@ while True:
     elif key == ord('s'):
         print('s')
         dy = -1
-    elif key == ord('a'):
+    
+    if key == ord('a'):
         print('a')
         dx = -1
     elif key == ord('d'):
         print('d')
         dx = 1
-    elif key == ord('q'):
+    
+    if key == ord('q'):
+        servo.set_angle(0)
+    elif key == ord('e'):
+        servo.set_angle(180)
+
+    if key == ord('z'):
         print("Quit")
         break
 
