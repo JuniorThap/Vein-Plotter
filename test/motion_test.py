@@ -1,12 +1,16 @@
 from src.stepper_motor import Motion2D
 import cv2
+import numpy as np
 
 motion = Motion2D()
 
-print("WASD to move, Q to quit")
+cv2.namedWindow("control", cv2.WINDOW_NORMAL)
+cv2.imshow("control", np.zeros((100, 300), dtype=np.uint8))
+
+print("Click the window. WASD to move, Q to quit")
 
 while True:
-    key = cv2.waitKey(50) & 0xFF  # 50 ms polling
+    key = cv2.waitKey(50) & 0xFF
 
     dx, dy = 0, 0
 
