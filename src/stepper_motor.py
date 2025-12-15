@@ -3,25 +3,28 @@
 import RPi.GPIO as GPIO
 import time
 from hardware_config import (
-    STEPPER_X_DIR, STEPPER_X_STEP, STEPPER_X_EN, STEPS_PER_MM_X,
-    STEPPER_Y_DIR, STEPPER_Y_STEP, STEPPER_Y_EN, STEPS_PER_MM_Y,
-    STEP_DELAY_SEC
+    STEPPER_X_DIR, STEPPER_X_STEP, STEPPER_X_EN, STEPS_PER_1_8MM_X,
+    STEPPER_Y_DIR, STEPPER_Y_STEP, STEPPER_Y_EN, STEPS_PER_1_8MM_Y,
+    STEP_DELAY_SEC, HOMING_X_LIMIT_SWITCH_PIN, HOMING_Y_LIMIT_SWITCH_PIN
 )
 
 
 class StepperAxis:
     """Represent a single axis (X or Y stepper)."""
 
-    def __init__(self, dir_pin, step_pin, en_pin, steps_per_mm):
+    def __init__(self, dir_pin, step_pin, en_pin, steps_per_1_8mm, homing_pin):
         self.dir_pin = dir_pin
         self.step_pin = step_pin
         self.en_pin = en_pin
-        self.steps_per_mm = steps_per_mm
+        self.steps_per_1_8mm = steps_per_1_8mm
+        self.homing_pin = homing_pin
         self.position_mm = 0.0
+        self.offset = 0.0
 
         GPIO.setup(dir_pin, GPIO.OUT)
         GPIO.setup(step_pin, GPIO.OUT)
         GPIO.setup(en_pin, GPIO.OUT)
+        GPIO.setup(homing_pin, GPIO.IN)
 
         GPIO.output(en_pin, GPIO.HIGH)  # disable initially
 
@@ -32,12 +35,12 @@ class StepperAxis:
         GPIO.output(self.en_pin, GPIO.HIGH)
 
     def move_to(self, target_mm):
-        delta = target_mm - self.position_mm
+        delta = (target_mm + self.offset) - self.position_mm
         if delta == 0:
             return
 
         direction = GPIO.HIGH if delta > 0 else GPIO.LOW
-        steps = int(abs(delta) * self.steps_per_mm)
+        steps = int(abs(delta) * self.steps_per_1_8mm / 1.8)
 
         self.enable()
         GPIO.output(self.dir_pin, direction)
@@ -50,14 +53,21 @@ class StepperAxis:
 
         self.disable()
         self.position_mm = target_mm
+    
+    def homing(self):
+        while GPIO.input(self.homing_pin) == GPIO.LOW:
+            self.move_to(self.position_mm-1)
+        self.position_mm = 0
 
 
 class Motion2D:
     """Two-axis (X,Y) movement controller."""
 
     def __init__(self):
-        self.x = StepperAxis(STEPPER_X_DIR, STEPPER_X_STEP, STEPPER_X_EN, STEPS_PER_MM_X)
-        self.y = StepperAxis(STEPPER_Y_DIR, STEPPER_Y_STEP, STEPPER_Y_EN, STEPS_PER_MM_Y)
+        self.x = StepperAxis(STEPPER_X_DIR, STEPPER_X_STEP, STEPPER_X_EN, STEPS_PER_1_8MM_X, HOMING_X_LIMIT_SWITCH_PIN)
+        self.y = StepperAxis(STEPPER_Y_DIR, STEPPER_Y_STEP, STEPPER_Y_EN, STEPS_PER_1_8MM_Y, HOMING_Y_LIMIT_SWITCH_PIN)
+
+        self.homing()
 
     def move_to(self, x_mm, y_mm):
         """Move both axes sequentially (safe for most mechanical systems)."""
@@ -69,3 +79,11 @@ class Motion2D:
 
     def get_position(self):
         return self.x.position_mm, self.y.position_mm
+    
+    def homing(self):
+        self.x.homing()
+        self.y.homing()
+    
+    def set_offset(self, offset_x, offset_y):
+        self.x.offset = offset_x
+        self.y.offset = offset_y
