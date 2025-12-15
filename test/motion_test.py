@@ -22,9 +22,9 @@ while True:
     elif key == ord('s'):
         print('s')
         dy = -1
-    elif key == ord('a'):
-        print('a')
-        dx = -1
+    # elif key == ord('a'):
+    #     print('a')
+    #     dx = -1
     elif key == ord('d'):
         print('d')
         dx = 1

@@ -3,19 +3,20 @@
 import RPi.GPIO as GPIO
 import time
 from src.hardware_config import (
-    STEPPER_X_DIR, STEPPER_X_STEP, STEPS_PER_1_8MM_X,
-    STEPPER_Y_DIR, STEPPER_Y_STEP, STEPS_PER_1_8MM_Y,
+    STEPPER_X_DIR, STEPPER_X_STEP, STEPS_PER_1_8DEG_X,
+    STEPPER_Y_DIR, STEPPER_Y_STEP, STEPS_PER_1_8DEG_Y,
     STEP_DELAY_SEC, HOMING_X_LIMIT_SWITCH_PIN, HOMING_Y_LIMIT_SWITCH_PIN
 )
+import math
 
 
 class StepperAxis:
     """Represent a single axis (X or Y stepper)."""
 
-    def __init__(self, dir_pin, step_pin, steps_per_1_8mm, homing_pin):
+    def __init__(self, dir_pin, step_pin, steps_per_1_8deg, homing_pin):
         self.dir_pin = dir_pin
         self.step_pin = step_pin
-        self.steps_per_1_8mm = steps_per_1_8mm
+        self.steps_per_1_8deg = steps_per_1_8deg
         self.homing_pin = homing_pin
         self.position_mm = 0.0
         self.offset = 0.0
@@ -25,13 +26,21 @@ class StepperAxis:
         GPIO.setup(step_pin, GPIO.OUT)
         GPIO.setup(homing_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
+    def mm2step(self, mm):
+        degree_per_step = 1.8 / self.steps_per_1_8deg
+        rad_per_step = degree_per_step / 180 * math.pi
+        mm_per_step = rad_per_step * 12
+        steps = mm / mm_per_step
+        return steps
+
     def move_to(self, target_mm):
         delta = (target_mm + self.offset) - self.position_mm
         if delta == 0:
             return
 
         direction = GPIO.HIGH if delta > 0 else GPIO.LOW
-        steps = int(abs(delta) * self.steps_per_1_8mm / 1.8)
+        # steps = int(abs(delta) * self.steps_per_1_8deg / 1.8)
+        steps = self.calculate_step(abs(delta))
 
         GPIO.output(self.dir_pin, direction)
 
@@ -40,7 +49,7 @@ class StepperAxis:
             time.sleep(STEP_DELAY_SEC)
             GPIO.output(self.step_pin, GPIO.LOW)
             time.sleep(STEP_DELAY_SEC)
-            
+
         self.position_mm = target_mm
     
     def homing(self):
@@ -53,8 +62,8 @@ class Motion2D:
     """Two-axis (X,Y) movement controller."""
 
     def __init__(self):
-        self.x = StepperAxis(STEPPER_X_DIR, STEPPER_X_STEP, STEPS_PER_1_8MM_X, HOMING_X_LIMIT_SWITCH_PIN)
-        self.y = StepperAxis(STEPPER_Y_DIR, STEPPER_Y_STEP, STEPS_PER_1_8MM_Y, HOMING_Y_LIMIT_SWITCH_PIN)
+        self.x = StepperAxis(STEPPER_X_DIR, STEPPER_X_STEP, STEPS_PER_1_8DEG_X, HOMING_X_LIMIT_SWITCH_PIN)
+        self.y = StepperAxis(STEPPER_Y_DIR, STEPPER_Y_STEP, STEPS_PER_1_8DEG_Y, HOMING_Y_LIMIT_SWITCH_PIN)
 
         self.homing()
 
