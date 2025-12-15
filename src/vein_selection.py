@@ -368,7 +368,8 @@ def score_vein(
     w_len=0.7,
     w_err=0, # 0.6
     w_ang=1,
-    w_edge=1
+    w_edge=1,
+    margin=10
 ):
     """
     Higher score = better vein
@@ -393,6 +394,8 @@ def score_vein(
     if hand_mask is not None:
         edge_dist = min_distance_from_center_to_contour(line["points"], hand_mask)
         score += w_edge * edge_dist
+        if edge_dist < margin:
+            score = -1
 
     return score
 
@@ -410,6 +413,8 @@ def select_top_vein(lines, hand_mask=None, k=3):
     scored.sort(key=lambda x: x[0], reverse=True)
     top = []
     for score, line in scored[:k]:
+        if score < 0:
+            continue
         line = line.copy()
         line["score"] = score
         top.append(line)
