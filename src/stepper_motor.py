@@ -3,8 +3,8 @@
 import RPi.GPIO as GPIO
 import time
 from hardware_config import (
-    STEPPER_X_DIR, STEPPER_X_STEP, STEPPER_X_EN, STEPS_PER_1_8MM_X,
-    STEPPER_Y_DIR, STEPPER_Y_STEP, STEPPER_Y_EN, STEPS_PER_1_8MM_Y,
+    STEPPER_X_DIR, STEPPER_X_STEP, STEPS_PER_1_8MM_X,
+    STEPPER_Y_DIR, STEPPER_Y_STEP, STEPS_PER_1_8MM_Y,
     STEP_DELAY_SEC, HOMING_X_LIMIT_SWITCH_PIN, HOMING_Y_LIMIT_SWITCH_PIN
 )
 
@@ -12,10 +12,9 @@ from hardware_config import (
 class StepperAxis:
     """Represent a single axis (X or Y stepper)."""
 
-    def __init__(self, dir_pin, step_pin, en_pin, steps_per_1_8mm, homing_pin):
+    def __init__(self, dir_pin, step_pin, steps_per_1_8mm, homing_pin):
         self.dir_pin = dir_pin
         self.step_pin = step_pin
-        self.en_pin = en_pin
         self.steps_per_1_8mm = steps_per_1_8mm
         self.homing_pin = homing_pin
         self.position_mm = 0.0
@@ -23,10 +22,8 @@ class StepperAxis:
 
         GPIO.setup(dir_pin, GPIO.OUT)
         GPIO.setup(step_pin, GPIO.OUT)
-        GPIO.setup(en_pin, GPIO.OUT)
         GPIO.setup(homing_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-        GPIO.output(en_pin, GPIO.HIGH)  # disable initially
 
     def enable(self):
         GPIO.output(self.en_pin, GPIO.LOW)
@@ -64,8 +61,8 @@ class Motion2D:
     """Two-axis (X,Y) movement controller."""
 
     def __init__(self):
-        self.x = StepperAxis(STEPPER_X_DIR, STEPPER_X_STEP, STEPPER_X_EN, STEPS_PER_1_8MM_X, HOMING_X_LIMIT_SWITCH_PIN)
-        self.y = StepperAxis(STEPPER_Y_DIR, STEPPER_Y_STEP, STEPPER_Y_EN, STEPS_PER_1_8MM_Y, HOMING_Y_LIMIT_SWITCH_PIN)
+        self.x = StepperAxis(STEPPER_X_DIR, STEPPER_X_STEP, STEPS_PER_1_8MM_X, HOMING_X_LIMIT_SWITCH_PIN)
+        self.y = StepperAxis(STEPPER_Y_DIR, STEPPER_Y_STEP, STEPS_PER_1_8MM_Y, HOMING_Y_LIMIT_SWITCH_PIN)
 
         self.homing()
 
