@@ -10,7 +10,7 @@ cv2.imshow("control", np.zeros((100, 300), dtype=np.uint8))
 print("Click the window. WASD to move, Q to quit")
 
 while True:
-    key = cv2.waitKey(50) & 0xFF
+    key = cv2.waitKey(1) & 0xFF
 
     dx, dy = 0, 0
 
