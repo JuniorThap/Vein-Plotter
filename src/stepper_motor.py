@@ -2,7 +2,7 @@
 
 import RPi.GPIO as GPIO
 import time
-from hardware_config import (
+from src.hardware_config import (
     STEPPER_X_DIR, STEPPER_X_STEP, STEPS_PER_1_8MM_X,
     STEPPER_Y_DIR, STEPPER_Y_STEP, STEPS_PER_1_8MM_Y,
     STEP_DELAY_SEC, HOMING_X_LIMIT_SWITCH_PIN, HOMING_Y_LIMIT_SWITCH_PIN
