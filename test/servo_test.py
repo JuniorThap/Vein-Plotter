@@ -17,17 +17,13 @@ try:
 		set_angle(0)
 		time.sleep(1)
 
-		print("90")
-		set_angle(90)
-		time.sleep(1)
+#		print("90")
+#		set_angle(90)
+#		time.sleep(1)
 
-		print("180")
-		set_angle(180)
-		time.sleep(1)
-		
-		print("270")
-		set_angle(270)
-		time.sleep(1)
+#		print("180")
+#		set_angle(180)
+#		time.sleep(1)
 
 except KeyboardInterrupt:
 	pass
