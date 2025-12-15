@@ -20,6 +20,7 @@ class StepperAxis:
         self.position_mm = 0.0
         self.offset = 0.0
 
+        GPIO.setmode(GPIO.BCM)
         GPIO.setup(dir_pin, GPIO.OUT)
         GPIO.setup(step_pin, GPIO.OUT)
         GPIO.setup(homing_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
