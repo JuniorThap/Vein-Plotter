@@ -86,7 +86,7 @@ def main():
     motion = Motion2D()
     servo = ServoWithLimit()
     camera = Camera()
-    calibrate = StepperCalibration()
+    calibrate = StepperCalibration(motion, servo, camera)
     display = Display()
 
     display.green_on()
