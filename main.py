@@ -110,13 +110,13 @@ def main():
             # ---- L1 ----
             wait_for_button_press()
             display.yellow_on()
-            perform_cycle(motion, servo, camera, folder, model, PERSON_ID, "L1")
+            perform_cycle(motion, servo, camera, model, folder, PERSON_ID, "L1")
             display.yellow_off()
             
             # ---- R1 ----
             wait_for_button_press()
             display.yellow_on()
-            perform_cycle(motion, servo, camera, folder, model, PERSON_ID, "R1")
+            perform_cycle(motion, servo, camera, model, folder, PERSON_ID, "R1")
             display.yellow_off()
 
             print(f"Completed PERSON {PERSON_ID:03d}")
