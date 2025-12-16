@@ -42,4 +42,5 @@ while True:
     if dx != 0 or dy != 0:
         motion.move_dir(dx, dy)
 
+servo.cleanup()
 cv2.destroyAllWindows()
