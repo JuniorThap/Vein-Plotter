@@ -5,13 +5,13 @@ import RPi.GPIO as GPIO
 from src.hardware_config import BUTTON_PIN
 from src.stepper_motor import Motion2D
 from src.servo_motor import ServoWithLimit
+from src.vein_selection import build_model
 from src.image_pipeline import Camera
 from src.stepper_calibration import StepperCalibration
 from src.mapping import map_vein_to_motion
 import cv2
 import os
 import torch
-from src.vein_selection import model_session
 
 
 def wait_for_button_press():
@@ -86,14 +86,14 @@ def main():
     servo = ServoWithLimit()
     camera = Camera()
     calibrate = StepperCalibration()
+    model = build_model(r"pretrained_unet_vein.p2", program=True)
 
     folder = "experiment2"
     os.makedirs(folder, exist_ok=True)
     print(f"Saving images to folder: {folder}")
 
-    print("Start Calibration in 5")
     time.sleep(5)
-    print("START")
+    print("Start Calibration")
     calibrate.calibrate(force=False)
 
     try:
@@ -103,11 +103,11 @@ def main():
 
             # ---- L1 ----
             wait_for_button_press()
-            perform_cycle(motion, servo, camera, folder, model_session, PERSON_ID, "L1")
+            perform_cycle(motion, servo, camera, folder, model, PERSON_ID, "L1")
             
             # ---- R1 ----
             wait_for_button_press()
-            perform_cycle(motion, servo, camera, folder, model_session, PERSON_ID, "R1")
+            perform_cycle(motion, servo, camera, folder, model, PERSON_ID, "R1")
 
             print(f"Completed PERSON {PERSON_ID:03d}")
 
