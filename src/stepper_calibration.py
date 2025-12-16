@@ -35,7 +35,7 @@ class StepperCalibration:
 
     def calibrate(self, force=False):
 
-        calib = self.load_calibration()
+        calib = self.load_calibration(CALIB_FILE)
 
         if calib is not None and not force:
             print("[INFO] Calibration already exists. Skipping calibration.")
