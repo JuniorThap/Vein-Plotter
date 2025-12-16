@@ -4,7 +4,7 @@ from src.vein_selection import build_model, pipeline
 import cv2
 
 
-model = build_model("pretrained_unet_vein.pth", auto=False)
+model = build_model("pretrained_unet_vein.pth", auto=False, program=True)
 model.eval()
 sample_input = torch.randn(1, 1, 480, 640)
 
