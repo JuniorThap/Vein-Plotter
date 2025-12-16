@@ -2,13 +2,13 @@
 
 import time
 import RPi.GPIO as GPIO
-from hardware_config import BUTTON_PIN
-from stepper_motor import Motion2D
-from servo_motor import ServoWithLimit
-from vein_selection import build_model
-from image_pipeline import Camera
-from stepper_calibration import StepperCalibration
-from mapping import map_vein_to_motion
+from src.hardware_config import BUTTON_PIN
+from src.stepper_motor import Motion2D
+from src.servo_motor import ServoWithLimit
+from src.vein_selection import build_model
+from src.image_pipeline import Camera
+from src.stepper_calibration import StepperCalibration
+from src.mapping import map_vein_to_motion
 import cv2
 import os
 
