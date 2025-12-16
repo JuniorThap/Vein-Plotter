@@ -1,6 +1,6 @@
 from src.stepper_motor import Motion2D
 from src.servo_motor import ServoWithLimit
-from src.mapping import pixel_to_mm, IMG_W, IMG_H
+from src.mapping import pixel_to_mm, IMG_W, IMG_H, FIELD_X_MM, FIELD_Y_MM
 from src.image_pipeline import Camera
 import time
 import json
@@ -53,7 +53,7 @@ class StepperCalibration:
 
         # Dot at some position
         in_x_px, in_y_px = IMG_W // 2 + 100, IMG_H // 2 + 100
-        in_x_mm, in_y_mm = pixel_to_mm(in_x_px), pixel_to_mm(in_y_px)
+        in_x_mm, in_y_mm = pixel_to_mm(in_x_px, FIELD_X_MM), pixel_to_mm(in_y_px, FIELD_Y_MM)
         self.motion.move_to(in_x_mm, in_y_mm)
         self.servo.sweep_until_limit(direction=1)
 
