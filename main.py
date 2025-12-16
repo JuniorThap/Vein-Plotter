@@ -30,7 +30,7 @@ def reset(motion: Motion2D, servo: ServoWithLimit):
 def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera, model, save_dir, person_id, side):
     camera.turn_ir_on()
     time.sleep(4)
-    ir_img = camera.capture_image()
+    ir_img = camera.capture_image(show=True)
     vein, mask = camera.detect_vein_points(model, ir_img)
     cv2.imshow("Mask", mask)
 
@@ -40,7 +40,6 @@ def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera, model
     servo.sweep_until_limit(direction=1)
     time.sleep(1)
     servo.set_angle(0)
-
 
     target = map_vein_to_motion(vein, index=1)
     print(f"Target → X={target.x_mm:.2f} mm, Y={target.y_mm:.2f} mm, Servo={target.servo_angle_deg:.1f}°")
@@ -53,7 +52,7 @@ def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera, model
     time.sleep(4)
     motion.homing()
 
-    img = camera.capture_image()
+    img = camera.capture_image(show=True)
 
     if save_dir is not None:
         ir_path = os.path.join(

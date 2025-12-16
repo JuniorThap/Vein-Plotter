@@ -42,6 +42,7 @@ class Camera():
 
     def capture_image(self, show=False):
         frame = self.picam2.capture_array()
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         if show:
             cv2.imshow("Camera", frame)
