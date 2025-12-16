@@ -38,7 +38,7 @@ class ServoWithLimit:
         self.current_angle = 0.0
         self.set_angle(0)  # initialize
 
-        self.stop_survo = False
+        self.stop_servo = False
 
         self.cb = self.pi.callback(LIMIT_SWITCH_PIN, pigpio.EITHER_EDGE, self.limit_hit_callback)
 
