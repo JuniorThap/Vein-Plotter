@@ -16,15 +16,7 @@ def load_calibration(path=CALIB_FILE):
         with open(path, "r") as f:
             return json.load(f)
         
-class StepperCalibration:
-    def __init__(self, motion: Motion2D, servo: ServoWithLimit, camera: Camera):
-        self.motion = motion
-        self.servo = servo
-        self.camera = camera
-
-    
-
-    def save_calibration(offset_x_mm, offset_y_mm, path=CALIB_FILE):
+def save_calibration(offset_x_mm, offset_y_mm, path=CALIB_FILE):
         data = {
             "offset_x_mm": offset_x_mm,
             "offset_y_mm": offset_y_mm,
@@ -33,8 +25,14 @@ class StepperCalibration:
 
         with open(path, "w") as f:
             json.dump(data, f, indent=4)
+        
+class StepperCalibration:
+    def __init__(self, motion: Motion2D, servo: ServoWithLimit, camera: Camera):
+        self.motion = motion
+        self.servo = servo
+        self.camera = camera
 
-
+    
     def calibrate(self, force=False):
 
         calib = load_calibration()
