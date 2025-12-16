@@ -123,6 +123,7 @@ def main():
 
     except KeyboardInterrupt:
         print("Exiting…")
+        display.green_off()
 
     finally:
         servo.cleanup()
