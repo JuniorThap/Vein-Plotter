@@ -25,16 +25,16 @@ class Camera():
 
     def __init__(self):
         self.ir_pin = IR_PIN
-        picam2 = Picamera2()
-        config = picam2.create_preview_configuration(
+        self.picam2 = Picamera2()
+        config = self.picam2.create_preview_configuration(
             main={"format": "RGB888", "size": (640, 480)}
         )
-        picam2.set_controls({
+        self.picam2.set_controls({
             "AfMode": controls.AfModeEnum.Manual,
             "LensPosition": 1   # ~15–20 cm (adjust if needed)
         })
-        picam2.configure(config)
-        picam2.start()
+        self.picam2.configure(config)
+        self.picam2.start()
 
         GPIO.setup(IR_PIN, GPIO.OUT)
         GPIO.output(IR_PIN, GPIO.HIGH)
