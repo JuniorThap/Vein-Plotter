@@ -5,6 +5,7 @@ from src.image_pipeline import Camera
 import time
 import json
 import os
+import cv2
 
 CALIB_FILE = "calibration_offset.json"
 
@@ -63,6 +64,7 @@ class StepperCalibration:
 
         img = self.camera.capture_image()
         dots, masked = self.camera.detect_dot(img)
+        cv2.imwrite("calibrate_img.png", img)
 
         if not dots:
             raise RuntimeError("Calibration failed: no dot detected")
