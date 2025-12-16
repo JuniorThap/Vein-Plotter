@@ -81,6 +81,9 @@ class ServoWithLimit:
             self.pi.set_servo_pulsewidth(SERVO_PIN, pulse)
             time.sleep(step_delay)
 
+            if (direction >= 1 and angle >= 180) or (direction <= -1 and angle <= 0):
+                break
+
         self.current_angle = angle
 
     def cleanup(self):
