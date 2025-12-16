@@ -52,8 +52,8 @@ class StepperCalibration:
             return
 
         # Dot at some position
-        in_x_px, in_y_px = IMG_W // 2 + 100, IMG_H // 2 + 100
-        in_x_mm, in_y_mm = pixel_to_mm(in_x_px, IMG_H, FIELD_X_MM), pixel_to_mm(in_y_px, IMG_W, FIELD_Y_MM)
+        in_x_px, in_y_px = IMG_W // 2, IMG_H // 2
+        in_x_mm, in_y_mm = pixel_to_mm(in_x_px, IMG_W, FIELD_X_MM), pixel_to_mm(in_y_px, IMG_H, FIELD_Y_MM)
         self.motion.move_to(in_x_mm, in_y_mm)
         self.servo.sweep_until_limit(direction=1)
 
@@ -95,6 +95,8 @@ if __name__ == "__main__":
     camera = Camera()
     calibrate = StepperCalibration(motion, servo, camera)
 
+    print("Homing")
+    motion.homing()
     print("Start Calibration in 5")
     time.sleep(5)
     print("START")
