@@ -1,11 +1,14 @@
 import torch
-import segmentation_models_pytorch as smp
 import cv2
 from skimage.morphology import skeletonize
 import numpy as np
 import matplotlib.pyplot as plt
 import os
 from torch.export import load
+try:
+    import segmentation_models_pytorch as smp
+except:
+    pass
 
 # region Model
 
