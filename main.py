@@ -91,8 +91,9 @@ def main():
     os.makedirs(folder, exist_ok=True)
     print(f"Saving images to folder: {folder}")
 
+    print("Start Calibration in 5")
     time.sleep(5)
-    print("Start Calibration")
+    print("START")
     calibrate.calibrate(force=False)
 
     try:

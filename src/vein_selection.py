@@ -1,5 +1,5 @@
 import torch
-import segmentation_models_pytorch as smp
+# import segmentation_models_pytorch as smp
 import cv2
 from skimage.morphology import skeletonize
 import numpy as np
@@ -14,16 +14,16 @@ import onnx
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-def build_model(model_path):
-    model = smp.Unet(
-        encoder_name="resnet34",
-        encoder_weights="imagenet",
-        in_channels=1,
-        classes=1,
-        activation="sigmoid"
-    ).to(device)
-    model.load_state_dict(torch.load(model_path, map_location=device))
-    return model
+# def build_model(model_path):
+#     model = smp.Unet(
+#         encoder_name="resnet34",
+#         encoder_weights="imagenet",
+#         in_channels=1,
+#         classes=1,
+#         activation="sigmoid"
+#     ).to(device)
+#     model.load_state_dict(torch.load(model_path, map_location=device))
+#     return model
 
 def model_session(input):
     sess = ort.InferenceSession('vein_unet.onnx')
