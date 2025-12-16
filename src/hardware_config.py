@@ -2,7 +2,7 @@
 
 # ---------------- INPUT PINS ----------------
 BUTTON_PIN = 5
-LIMIT_SWITCH_PIN = 7    # Servo limit switch (active LOW)
+LIMIT_SWITCH_PIN = 4    # Servo limit switch (active LOW)
 
 # ---------------- Camera -------------------
 IR_PIN = 9
