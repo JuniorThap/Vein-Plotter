@@ -5,7 +5,7 @@ BUTTON_PIN = 5
 LIMIT_SWITCH_PIN = 4    # Servo limit switch (active LOW)
 
 # ---------------- Camera -------------------
-IR_PIN = 9
+IR_PIN = 26
 
 # ---------------- STEPPER X ----------------
 STEPPER_X_DIR = 12
