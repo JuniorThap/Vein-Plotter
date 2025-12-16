@@ -41,7 +41,7 @@ class ServoWithLimit:
         self.set_angle(0)  # initialize
 
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(LIMIT_SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.setup(LIMIT_SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
     def angle_to_pulse(self, angle_deg: float) -> int:
