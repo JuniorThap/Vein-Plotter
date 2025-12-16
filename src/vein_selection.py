@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import os
 import onnxruntime as ort
 import numpy as np
-import onnx
+# import onnx
 
 
 # region Model

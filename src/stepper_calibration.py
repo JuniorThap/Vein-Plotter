@@ -88,7 +88,10 @@ class StepperCalibration:
 
 
 if __name__ == "__main__":
-    calibrate = StepperCalibration()
+    motion = Motion2D()
+    servo = ServoWithLimit()
+    camera = Camera()
+    calibrate = StepperCalibration(motion, servo, camera)
 
     print("Start Calibration in 5")
     time.sleep(5)
