@@ -18,7 +18,7 @@ for pin in [
     HOMING_Y_LIMIT_SWITCH_PIN
 ]:
     pi.set_mode(pin, pigpio.INPUT)
-    pi.set_pull_up_down(pin, pigpio.PUD_DOWN)
+    pi.set_pull_up_down(pin, pigpio.PUD_UP)
 
 print("Reading limit switches (Ctrl+C to exit)")
 print("1 = NOT pressed, 0 = PRESSED\n")
