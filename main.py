@@ -33,7 +33,7 @@ def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera, model
     camera.turn_ir_on()
     time.sleep(4)
     print("[2. CAPTURE IR IMAGE]")
-    ir_img = camera.capture_image(show=True)
+    ir_img = camera.capture_image()
     vein, mask = camera.detect_vein_points(model, ir_img)
     cv2.imshow("Mask", mask)
 
@@ -67,7 +67,7 @@ def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera, model
     time.sleep(4)
     motion.homing()
 
-    img = camera.capture_image(show=True)
+    img = camera.capture_image()
 
     if save_dir is not None:
         ir_path = os.path.join(
