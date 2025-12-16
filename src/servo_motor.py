@@ -60,7 +60,7 @@ class ServoWithLimit:
         self.current_angle = angle_deg
 
     def limit_hit_callback(self, gpio, level, tick):
-        if level == 1:  # NC → triggered
+        if level == 0:  # NC → triggered
             print("LIMIT HIT → stopping servo")
             self.stop_servo = True
 
