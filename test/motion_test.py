@@ -2,7 +2,7 @@ from src.stepper_motor import Motion2D
 from src.servo_motor import ServoWithLimit
 import cv2
 import numpy as np
-from src.hardware_config import LIMIT_SWITCH_PIN
+
 
 motion = Motion2D()
 servo = ServoWithLimit()
@@ -38,8 +38,6 @@ while True:
     elif key == ord('z'):
         print("Quit")
         break
-
-    print(servo.pi.read(LIMIT_SWITCH_PIN))
 
 
     if dx != 0 or dy != 0:

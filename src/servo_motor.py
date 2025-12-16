@@ -8,6 +8,8 @@ from src.hardware_config import (
     SERVO_MAX_DUTY,
     LIMIT_SWITCH_PIN,
 )
+import RPi.GPIO as GPIO
+
 
 
 class ServoWithLimit:
@@ -37,6 +39,9 @@ class ServoWithLimit:
 
         self.current_angle = 0.0
         self.set_angle(0)  # initialize
+
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(LIMIT_SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 
     def angle_to_pulse(self, angle_deg: float) -> int:
@@ -70,6 +75,10 @@ class ServoWithLimit:
         angle = self.current_angle
 
         while 0.0 <= angle <= 180.0:
+
+            if GPIO.input(LIMIT_SWITCH_PIN) == 0:
+                break
+            
             angle += direction * step_deg
             angle = max(0.0, min(180.0, angle))
 
