@@ -38,7 +38,7 @@ def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera, model
 
     print("[3. MAP TO MOTION]")
     target = map_vein_to_motion(vein, index=0)
-    print(f"Target → X={target.x_mm:.2f} mm, Y={target.y_mm:.2f} mm, Servo={target.servo_angle_deg:.1f}°")
+    print(f"Target → X={target.x_mm:.2f} mm, Y={target.y_mm:.2f} mm")
     
     print("[4. START MOVING]")
     motion.move_to(target.x_mm, target.y_mm)
@@ -50,7 +50,7 @@ def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera, model
 
     print("[7. MAP TO MOTION (NEXT DOT)]")
     target = map_vein_to_motion(vein, index=1)
-    print(f"Target → X={target.x_mm:.2f} mm, Y={target.y_mm:.2f} mm, Servo={target.servo_angle_deg:.1f}°")
+    print(f"Target → X={target.x_mm:.2f} mm, Y={target.y_mm:.2f} mm")
     
     print("[8. START MOVING]")
     motion.move_to(target.x_mm, target.y_mm)
