@@ -3,14 +3,14 @@ from src.servo_motor import ServoWithLimit
 import cv2
 import numpy as np
 
-
-motion = Motion2D()
-servo = ServoWithLimit()
-
 cv2.namedWindow("control", cv2.WINDOW_NORMAL)
 cv2.imshow("control", np.zeros((100, 300), dtype=np.uint8))
 
 print("Click the window. WASD to move, QE for servo, Z to quit")
+
+motion = Motion2D()
+servo = ServoWithLimit()
+
 
 while True:
     key = cv2.waitKey(1) & 0xFF
