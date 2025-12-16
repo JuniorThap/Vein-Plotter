@@ -28,26 +28,41 @@ def reset(motion: Motion2D, servo: ServoWithLimit):
     motion.homing()
 
 def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera, model, save_dir, person_id, side):
+    print("[-----START NEW CYCLE-----]")
+    print("[1. TURN IR ON]")
     camera.turn_ir_on()
     time.sleep(4)
+    print("[2. CAPTURE IR IMAGE]")
     ir_img = camera.capture_image(show=True)
     vein, mask = camera.detect_vein_points(model, ir_img)
     cv2.imshow("Mask", mask)
 
+    print("[3. MAP TO MOTION]")
     target = map_vein_to_motion(vein, index=0)
     print(f"Target → X={target.x_mm:.2f} mm, Y={target.y_mm:.2f} mm, Servo={target.servo_angle_deg:.1f}°")
+    
+    print("[4. START MOVING]")
     motion.move_to(target.x_mm, target.y_mm)
+    print("[5. DOT THE PEN]")
     servo.sweep_until_limit(direction=1)
     time.sleep(1)
+    print("[6. RETURN]")
     servo.set_angle(0)
 
+    print("[7. MAP TO MOTION (NEXT DOT)]")
     target = map_vein_to_motion(vein, index=1)
     print(f"Target → X={target.x_mm:.2f} mm, Y={target.y_mm:.2f} mm, Servo={target.servo_angle_deg:.1f}°")
+    
+    print("[8. START MOVING]")
     motion.move_to(target.x_mm, target.y_mm)
+    print("[9. DOT THE PEN]")
     servo.sweep_until_limit(direction=1)
     time.sleep(1)
+    print("[10. RETURN]")
     servo.set_angle(0)
 
+
+    print("[11. CLOSE IR AND HOMING]")
     camera.turn_ir_off()
     time.sleep(4)
     motion.homing()
@@ -68,6 +83,7 @@ def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera, model
         print(f"Saved {ir_path}")
         print(f"Saved {noir_path}")
 
+    print("[-----END CYCLE-----]")
 
 
 def get_next_person_id(folder):
@@ -101,6 +117,9 @@ def main():
     display.yellow_on()
     calibrate.calibrate(force=False)
     display.yellow_off()
+
+    servo.set_angle(0)
+    motion.homing()
 
     try:
         while True:
