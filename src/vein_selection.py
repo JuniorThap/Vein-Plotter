@@ -5,6 +5,9 @@ from skimage.morphology import skeletonize
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import onnxruntime as ort
+import numpy as np
+import onnx
 
 
 # region Model
@@ -22,6 +25,11 @@ def build_model(model_path):
     model.load_state_dict(torch.load(model_path, map_location=device))
     return model
 
+def model_session(input):
+    sess = ort.InferenceSession('vein_unet.onnx')
+    outputs = sess.run(None, {"input": input})
+    return outputs[0]
+
 # endregion
 
 
@@ -35,11 +43,13 @@ def pad_to_divisible(img, div=32):
     img = cv2.copyMakeBorder(img, 0, pad_h, 0, pad_w, cv2.BORDER_CONSTANT, value=0)
     return img, pad_h, pad_w
 
-def preparedata(img):
+def preparedata(img, return_pt=True):
     if isinstance(img, str):
         img = cv2.imread(img, cv2.IMREAD_GRAYSCALE)
     img, pad_h, pad_w = pad_to_divisible(img)
     img = torch.tensor(img).unsqueeze(0).unsqueeze(0).float() / 255.0
+    if not return_pt:
+        img = img.numpy()
     return img, (pad_h, pad_w)
 
 def depad(img, pad_h, pad_w):
@@ -339,7 +349,7 @@ import numpy as np
 def min_distance_from_center_to_contour(points, hand_contour):
     pts = points.astype(np.float32)
     center = np.mean(pts, axis=0)
-    contour = hand_contour.reshape(-1, 2).astype(np.float32)
+    contour = np.array(hand_contour).reshape(-1, 2).astype(np.float32)
     dists = np.linalg.norm(contour - center, axis=1)
     return float(np.min(dists))
 
@@ -363,7 +373,7 @@ def extract_hand_contour(gray):
     filtered = []
     for c in contours:
         if cv2.contourArea(c) >= 20000:
-            filtered.append(filtered)
+            filtered.append(c)
 
     return filtered
 
@@ -566,12 +576,10 @@ def evaluate_prediction(
 
 
 def pipeline(model, img):
-    input, pad_info = preparedata(img)
+    input, pad_info = preparedata(img, return_pt=False)
     pad_h, pad_w = pad_info
-    input = input.to(device)
     
-    with torch.no_grad():
-        mask = model(input).detach().cpu().squeeze().numpy() > 0.5
+    mask = np.array(model(input)[0, 0] > 0.5, dtype=np.float32)
     img = depad(img, pad_h, pad_w)
     mask = depad(mask, pad_h, pad_w)
 

@@ -5,12 +5,13 @@ import RPi.GPIO as GPIO
 from src.hardware_config import BUTTON_PIN
 from src.stepper_motor import Motion2D
 from src.servo_motor import ServoWithLimit
-from src.vein_selection import build_model
 from src.image_pipeline import Camera
 from src.stepper_calibration import StepperCalibration
 from src.mapping import map_vein_to_motion
 import cv2
 import os
+import torch
+from src.vein_selection import model_session
 
 
 def wait_for_button_press():
@@ -25,11 +26,11 @@ def reset(motion: Motion2D, servo: ServoWithLimit):
     servo.set_angle(0)
     motion.homing()
 
-def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera, save_dir, person_id, side):
+def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera, model, save_dir, person_id, side):
     camera.turn_ir_on()
     time.sleep(4)
     ir_img = camera.capture_image()
-    vein = camera.detect_vein_points(ir_img)
+    vein = camera.detect_vein_points(model, ir_img)
 
     target = map_vein_to_motion(vein, index=0)
     print(f"Target → X={target.x_mm:.2f} mm, Y={target.y_mm:.2f} mm, Servo={target.servo_angle_deg:.1f}°")
@@ -86,8 +87,6 @@ def main():
     camera = Camera()
     calibrate = StepperCalibration()
 
-    build_model(r"pretrained_unet_vein.pth")
-
     folder = "experiment2"
     os.makedirs(folder, exist_ok=True)
     print(f"Saving images to folder: {folder}")
@@ -103,11 +102,11 @@ def main():
 
             # ---- L1 ----
             wait_for_button_press()
-            perform_cycle(motion, servo, camera, folder, PERSON_ID, "L1")
+            perform_cycle(motion, servo, camera, folder, model_session, PERSON_ID, "L1")
             
             # ---- R1 ----
             wait_for_button_press()
-            perform_cycle(motion, servo, camera, folder, PERSON_ID, "R1")
+            perform_cycle(motion, servo, camera, folder, model_session, PERSON_ID, "R1")
 
             print(f"Completed PERSON {PERSON_ID:03d}")
 
