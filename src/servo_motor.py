@@ -94,5 +94,4 @@ class ServoWithLimit:
     def cleanup(self):
         # stop sending pulses
         self.pi.set_servo_pulsewidth(SERVO_PIN, 0)
-        self.cb.cancel()
         self.pi.stop()
