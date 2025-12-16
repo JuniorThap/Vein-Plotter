@@ -33,7 +33,7 @@ while True:
         servo.set_angle(0)
     elif key == ord('e'):
         print('e')
-        servo.set_angle(90)
+        servo.set_angle(180)
     elif key == ord('z'):
         print("Quit")
         break
