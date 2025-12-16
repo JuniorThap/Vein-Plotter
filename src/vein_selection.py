@@ -28,9 +28,7 @@ def build_model(model_path, auto=True, program=False):
         model.load_state_dict(torch.load(model_path, map_location=device))
         return model
     else:
-        model = load(model_path)
-        loaded_model = model.module()
-        return loaded_model
+        model = torch.jit.load("vein_unet_ts.pt", map_location="cpu")
 # endregion
 
 
