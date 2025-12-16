@@ -80,6 +80,7 @@ class ServoWithLimit:
 
         while 0.0 <= angle <= 180.0:
             # check limit switch (active LOW)
+            print(self.stop_servo)
             if self.stop_servo:
                 break
 
