@@ -1,5 +1,7 @@
 from src.stepper_motor import Motion2D
 from src.servo_motor import ServoWithLimit
+from src.image_pipeline import Camera
+from src.stepper_calibration import StepperCalibration
 import cv2
 import numpy as np
 
@@ -10,9 +12,13 @@ print("Click the window. WASD to move, QE for servo, Z to quit")
 
 motion = Motion2D()
 servo = ServoWithLimit()
+camera = Camera()
+calibrate = StepperCalibration(motion, servo, camera)
 
 
 while True:
+    img = camera.capture_image()
+    cv2.imshow("Camera", img)
     key = cv2.waitKey(1) & 0xFF
 
     dx, dy = 0, 0
@@ -38,6 +44,9 @@ while True:
     elif key == ord('h'):
         print("Homing")
         motion.homing()
+    elif key == ord('f'):
+        x, y = motion.get_position()
+        calibrate.save_calibration(x, y)
     elif key == ord('z'):
         print("Quit")
         break
