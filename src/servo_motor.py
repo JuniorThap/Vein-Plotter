@@ -38,9 +38,6 @@ class ServoWithLimit:
         self.current_angle = 0.0
         self.set_angle(0)  # initialize
 
-        self.stop_servo = False
-
-        self.cb = self.pi.callback(LIMIT_SWITCH_PIN, pigpio.EITHER_EDGE, self.limit_hit_callback)
 
     def angle_to_pulse(self, angle_deg: float) -> int:
         angle_clamped = max(0.0, min(180.0, angle_deg))
@@ -59,12 +56,6 @@ class ServoWithLimit:
         # (we do NOT stop pulse as in RPi.GPIO version)
         self.current_angle = angle_deg
 
-    def limit_hit_callback(self, gpio, level, tick):
-        if level == 0:  # NC → triggered
-            print("LIMIT HIT → stopping servo")
-            self.stop_servo = True
-
-
     def sweep_until_limit(
         self,
         direction: int = 1,
@@ -79,7 +70,7 @@ class ServoWithLimit:
         angle = self.current_angle
 
         while 0.0 <= angle <= 180.0:
-            break
+            print(self.pi.read(LIMIT_SWITCH_PIN))
 
             angle += direction * step_deg
             angle = max(0.0, min(180.0, angle))
