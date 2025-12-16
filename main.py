@@ -86,7 +86,7 @@ def main():
     servo = ServoWithLimit()
     camera = Camera()
     calibrate = StepperCalibration()
-    model = build_model(r"pretrained_unet_vein.pth")
+    model = build_model(r"pretrained_unet_vein.p2", program=True)
 
     folder = "experiment2"
     os.makedirs(folder, exist_ok=True)

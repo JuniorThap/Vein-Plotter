@@ -5,25 +5,29 @@ from skimage.morphology import skeletonize
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-
+from torch.export import load
 
 # region Model
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-def build_model(model_path, auto=True):
-    model = smp.Unet(
-        encoder_name="resnet34",
-        encoder_weights="imagenet",
-        in_channels=1,
-        classes=1,
-        activation="sigmoid"
-    )
-    if auto:
-        model.to(device)
-    model.load_state_dict(torch.load(model_path, map_location=device))
-    return model
-
+def build_model(model_path, auto=True, program=False):
+    if not program:
+        model = smp.Unet(
+            encoder_name="resnet34",
+            encoder_weights="imagenet",
+            in_channels=1,
+            classes=1,
+            activation="sigmoid"
+        )
+        if auto:
+            model.to(device)
+        model.load_state_dict(torch.load(model_path, map_location=device))
+        return model
+    else:
+        model = load(model_path)
+        loaded_model = model.module()
+        return loaded_model
 # endregion
 
 
