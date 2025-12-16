@@ -5,7 +5,7 @@ from skimage.morphology import skeletonize
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-import onnxruntime as ort
+# import onnxruntime as ort
 import numpy as np
 # import onnx
 
@@ -25,10 +25,10 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 #     model.load_state_dict(torch.load(model_path, map_location=device))
 #     return model
 
-def model_session(input):
-    sess = ort.InferenceSession('vein_unet.onnx')
-    outputs = sess.run(None, {"input": input})
-    return outputs[0]
+# def model_session(input):
+#     sess = ort.InferenceSession('vein_unet.onnx')
+#     outputs = sess.run(None, {"input": input})
+#     return outputs[0]
 
 # endregion
 
