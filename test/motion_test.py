@@ -35,9 +35,9 @@ while True:
     elif key == ord('e'):
         print('e')
         servo.sweep_until_limit(1)
-    # elif key == ord('h'):
-    #     print("Homing")
-    #     motion.homing()
+    elif key == ord('h'):
+        print("Homing")
+        motion.homing()
     elif key == ord('z'):
         print("Quit")
         break
