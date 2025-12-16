@@ -8,6 +8,7 @@ from src.servo_motor import ServoWithLimit
 from src.vein_selection import build_model
 from src.image_pipeline import Camera
 from src.stepper_calibration import StepperCalibration
+from src.display_emer import Display
 from src.mapping import map_vein_to_motion
 import cv2
 import os
@@ -86,6 +87,9 @@ def main():
     servo = ServoWithLimit()
     camera = Camera()
     calibrate = StepperCalibration()
+    display = Display()
+
+    display.green_on()
     model = build_model(r"pretrained_unet_vein.p2", program=True)
 
     folder = "experiment2"
@@ -94,7 +98,9 @@ def main():
 
     time.sleep(5)
     print("Start Calibration")
+    display.yellow_on()
     calibrate.calibrate(force=False)
+    display.yellow_off()
 
     try:
         while True:
@@ -103,11 +109,15 @@ def main():
 
             # ---- L1 ----
             wait_for_button_press()
+            display.yellow_on()
             perform_cycle(motion, servo, camera, folder, model, PERSON_ID, "L1")
+            display.yellow_off()
             
             # ---- R1 ----
             wait_for_button_press()
+            display.yellow_on()
             perform_cycle(motion, servo, camera, folder, model, PERSON_ID, "R1")
+            display.yellow_off()
 
             print(f"Completed PERSON {PERSON_ID:03d}")
 

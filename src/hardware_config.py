@@ -1,7 +1,7 @@
 # hardware_config.py
 
 # ---------------- INPUT PINS ----------------
-BUTTON_PIN = 5
+BUTTON_PIN = 25
 LIMIT_SWITCH_PIN = 4    # Servo limit switch (active LOW)
 
 # ---------------- Camera -------------------
@@ -30,3 +30,8 @@ SERVO_PIN = 18
 SERVO_FREQ_HZ = 50
 SERVO_MIN_DUTY = 2.5
 SERVO_MAX_DUTY = 12.5
+
+# ---------------- DISPLAY AND EMER --------------
+EMERGENCY = 9
+YELLOW_LIGHT = 22
+GREEN_LIGHT = 27
