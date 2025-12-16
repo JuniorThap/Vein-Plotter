@@ -21,3 +21,4 @@ out, lines = pipeline(loaded_model, img, auto=False)
 cv2.imshow("Output", out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
