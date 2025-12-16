@@ -4,14 +4,14 @@ from src.vein_selection import build_model, pipeline
 import cv2
 
 
-model = build_model("pretrained_unet_vein.pth", auto=False, program=True)
-model.eval()
-sample_input = torch.randn(1, 1, 480, 640)
+# model = build_model("pretrained_unet_vein.pth", auto=False, program=True)
+# model.eval()
+# sample_input = torch.randn(1, 1, 480, 640)
 
 
-exported_program = export(model, (sample_input,))
+# exported_program = export(model, (sample_input,))
 
-save(exported_program, 'pretrained_unet_vein.pt2')
+# save(exported_program, 'pretrained_unet_vein.pt2')
 
 model = load('pretrained_unet_vein.pt2')
 loaded_model = model.module()
