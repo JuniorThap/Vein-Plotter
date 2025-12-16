@@ -2,7 +2,7 @@
 
 # ---------------- INPUT PINS ----------------
 BUTTON_PIN = 5
-LIMIT_SWITCH_PIN = 6    # Servo limit switch (active LOW)
+LIMIT_SWITCH_PIN = 7    # Servo limit switch (active LOW)
 
 # ---------------- Camera -------------------
 IR_PIN = 9
@@ -21,8 +21,8 @@ STEPS_PER_1_8DEG_Y = 4
 
 STEP_DELAY_SEC = 0.001
 
-HOMING_X_LIMIT_SWITCH_PIN = 7
-HOMING_Y_LIMIT_SWITCH_PIN = 8
+HOMING_X_LIMIT_SWITCH_PIN = 23
+HOMING_Y_LIMIT_SWITCH_PIN = 24
 
 # ---------------- SERVO ----------------
 SERVO_PIN = 18
