@@ -70,8 +70,6 @@ class ServoWithLimit:
         angle = self.current_angle
 
         while 0.0 <= angle <= 180.0:
-            print(self.pi.read(LIMIT_SWITCH_PIN))
-
             angle += direction * step_deg
             angle = max(0.0, min(180.0, angle))
 
