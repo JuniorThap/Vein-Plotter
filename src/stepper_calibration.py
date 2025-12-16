@@ -1,6 +1,6 @@
 from src.stepper_motor import Motion2D
 from src.servo_motor import ServoWithLimit
-from src.mapping import pixel_to_mm, IMG_W, IMG_H, FIELD_in_X_MM, in_FIELD_Y_MM
+from src.mapping import pixel_to_mm, IMG_W, IMG_H
 from src.image_pipeline import Camera
 import time
 import json
