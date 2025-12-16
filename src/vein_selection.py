@@ -29,6 +29,7 @@ def build_model(model_path, auto=True, program=False):
         return model
     else:
         model = torch.jit.load("vein_unet_ts.pt", map_location="cpu")
+        return model
 # endregion
 
 
