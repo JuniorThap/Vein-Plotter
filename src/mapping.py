@@ -6,8 +6,15 @@ from image_pipeline import VeinDetectionResult
 
 IMG_W = 640
 IMG_H = 480
-FIELD_X_MM = 80
-FIELD_Y_MM = 60
+
+MAX_FIELD_X_MM = 205
+MAX_FIELD_Y_MM = MAX_FIELD_X_MM * (IMG_H / IMG_W) # 155
+
+CAMERA_HIGH = 300
+HAND_HIGH = 80 # Estimatation
+
+FIELD_X_MM = (MAX_FIELD_X_MM / 2) * (CAMERA_HIGH - HAND_HIGH)
+FIELD_Y_MM = (MAX_FIELD_Y_MM / 2) * (CAMERA_HIGH - HAND_HIGH)
 
 @dataclass
 class MotionTarget:
