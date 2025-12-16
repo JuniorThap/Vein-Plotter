@@ -9,18 +9,20 @@ import cv2
 
 CALIB_FILE = "calibration_offset.json"
 
+def load_calibration(path=CALIB_FILE):
+        if not os.path.exists(path):
+            return None
+
+        with open(path, "r") as f:
+            return json.load(f)
+        
 class StepperCalibration:
     def __init__(self, motion: Motion2D, servo: ServoWithLimit, camera: Camera):
         self.motion = motion
         self.servo = servo
         self.camera = camera
 
-    def load_calibration(path=CALIB_FILE):
-        if not os.path.exists(path):
-            return None
-
-        with open(path, "r") as f:
-            return json.load(f)
+    
 
     def save_calibration(offset_x_mm, offset_y_mm, path=CALIB_FILE):
         data = {
@@ -35,7 +37,7 @@ class StepperCalibration:
 
     def calibrate(self, force=False):
 
-        calib = self.load_calibration(CALIB_FILE)
+        calib = load_calibration()
 
         if calib is not None and not force:
             print("[INFO] Calibration already exists. Skipping calibration.")
