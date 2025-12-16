@@ -3,21 +3,26 @@
 import RPi.GPIO as GPIO
 import time
 from src.hardware_config import (
-    STEPPER_X_DIR, STEPPER_X_STEP, STEPS_PER_1_8DEG_X,
-    STEPPER_Y_DIR, STEPPER_Y_STEP, STEPS_PER_1_8DEG_Y,
-    STEP_DELAY_SEC, HOMING_X_LIMIT_SWITCH_PIN, HOMING_Y_LIMIT_SWITCH_PIN
+    STEPPER_X_DIR, STEPPER_X_STEP, MICROSTEP_X,
+    STEPPER_Y_DIR, STEPPER_Y_STEP, MICROSTEP_Y,
+    STEP_DELAY_SEC, HOMING_X_LIMIT_SWITCH_PIN, HOMING_Y_LIMIT_SWITCH_PIN,
+    MOTOR_STEP
 )
 import math
 
+# GT2
+PULLEY_TEETH = 20
+BELT_PITCH = 2
 
 class StepperAxis:
     """Represent a single axis (X or Y stepper)."""
 
-    def __init__(self, dir_pin, step_pin, steps_per_1_8deg, homing_pin, reverse=False):
+    def __init__(self, dir_pin, step_pin, homing_pin, microsteps, motor_steps, reverse=False):
         self.dir_pin = dir_pin
         self.step_pin = step_pin
-        self.steps_per_1_8deg = steps_per_1_8deg
         self.homing_pin = homing_pin
+        self.microsteps = microsteps
+        self.motor_steps = motor_steps
         self.position_mm = 0.0
         self.offset = 0.0
         self.reverse = reverse
@@ -28,10 +33,9 @@ class StepperAxis:
         GPIO.setup(homing_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     def mm2step(self, mm):
-        degree_per_step = 1.8 / self.steps_per_1_8deg
-        rad_per_step = degree_per_step / 180 * math.pi
-        mm_per_step = rad_per_step * 12
-        steps = mm / mm_per_step
+        mm_per_rev = PULLEY_TEETH * BELT_PITCH
+        steps_per_rev = self.microsteps * self.motor_steps
+        steps = mm * (steps_per_rev / mm_per_rev)
         return int(steps)
 
     def move_to(self, target_mm):
@@ -42,7 +46,6 @@ class StepperAxis:
         direction = GPIO.HIGH if delta > 0 else GPIO.LOW
         if self.reverse:
             direction = GPIO.LOW if direction == GPIO.HIGH else GPIO.HIGH
-        # steps = int(abs(delta) * self.steps_per_1_8deg / 1.8)
         steps = self.mm2step(abs(delta))
 
         GPIO.output(self.dir_pin, direction)
@@ -65,8 +68,8 @@ class Motion2D:
     """Two-axis (X,Y) movement controller."""
 
     def __init__(self):
-        self.x = StepperAxis(STEPPER_X_DIR, STEPPER_X_STEP, STEPS_PER_1_8DEG_X, HOMING_X_LIMIT_SWITCH_PIN)
-        self.y = StepperAxis(STEPPER_Y_DIR, STEPPER_Y_STEP, STEPS_PER_1_8DEG_Y, HOMING_Y_LIMIT_SWITCH_PIN, reverse=True)
+        self.x = StepperAxis(STEPPER_X_DIR, STEPPER_X_STEP, HOMING_X_LIMIT_SWITCH_PIN, MICROSTEP_X, MOTOR_STEP)
+        self.y = StepperAxis(STEPPER_Y_DIR, STEPPER_Y_STEP, HOMING_Y_LIMIT_SWITCH_PIN, MICROSTEP_Y, MOTOR_STEP, reverse=True)
 
         self.homing()
 

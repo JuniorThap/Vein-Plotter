@@ -1,7 +1,7 @@
 # mapping.py
 
 from dataclasses import dataclass
-from image_pipeline import VeinDetectionResult
+from src.image_pipeline import VeinDetectionResult
 
 
 IMG_W = 640

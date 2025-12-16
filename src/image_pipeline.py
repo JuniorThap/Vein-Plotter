@@ -9,8 +9,8 @@ import RPi.GPIO as GPIO
 import cv2
 import time
 import os
-from vein_selection import pipeline
-from hardware_config import IR_PIN
+from src.vein_selection import pipeline
+from src.hardware_config import IR_PIN
 import numpy as np
 
 
