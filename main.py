@@ -31,7 +31,8 @@ def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera, model
     camera.turn_ir_on()
     time.sleep(4)
     ir_img = camera.capture_image()
-    vein = camera.detect_vein_points(model, ir_img)
+    vein, mask = camera.detect_vein_points(model, ir_img)
+    cv2.imshow("Mask", mask)
 
     target = map_vein_to_motion(vein, index=0)
     print(f"Target → X={target.x_mm:.2f} mm, Y={target.y_mm:.2f} mm, Servo={target.servo_angle_deg:.1f}°")
