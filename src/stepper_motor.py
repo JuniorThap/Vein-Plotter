@@ -13,13 +13,14 @@ import math
 class StepperAxis:
     """Represent a single axis (X or Y stepper)."""
 
-    def __init__(self, dir_pin, step_pin, steps_per_1_8deg, homing_pin):
+    def __init__(self, dir_pin, step_pin, steps_per_1_8deg, homing_pin, reverse=False):
         self.dir_pin = dir_pin
         self.step_pin = step_pin
         self.steps_per_1_8deg = steps_per_1_8deg
         self.homing_pin = homing_pin
         self.position_mm = 0.0
         self.offset = 0.0
+        self.reverse = reverse
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(dir_pin, GPIO.OUT)
@@ -39,6 +40,8 @@ class StepperAxis:
             return
 
         direction = GPIO.HIGH if delta > 0 else GPIO.LOW
+        if self.reverse:
+            direction *= -1
         # steps = int(abs(delta) * self.steps_per_1_8deg / 1.8)
         steps = self.mm2step(abs(delta))
 
@@ -63,7 +66,7 @@ class Motion2D:
 
     def __init__(self):
         self.x = StepperAxis(STEPPER_X_DIR, STEPPER_X_STEP, STEPS_PER_1_8DEG_X, HOMING_X_LIMIT_SWITCH_PIN)
-        self.y = StepperAxis(STEPPER_Y_DIR, STEPPER_Y_STEP, STEPS_PER_1_8DEG_Y, HOMING_Y_LIMIT_SWITCH_PIN)
+        self.y = StepperAxis(STEPPER_Y_DIR, STEPPER_Y_STEP, STEPS_PER_1_8DEG_Y, HOMING_Y_LIMIT_SWITCH_PIN, reverse=True)
 
         self.homing()
 

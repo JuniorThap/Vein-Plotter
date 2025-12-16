@@ -19,10 +19,10 @@ while True:
 
     if key == ord('w'):
         print('w')
-        dy = 1
+        dy = -1
     elif key == ord('s'):
         print('s')
-        dy = -1
+        dy = 1
     elif key == ord('a'):
         print('a')
         dx = -1
