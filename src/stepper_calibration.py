@@ -87,3 +87,10 @@ class StepperCalibration:
         self.camera.turn_ir_on()
 
 
+if __name__ == "__main__":
+    calibrate = StepperCalibration()
+
+    print("Start Calibration in 5")
+    time.sleep(5)
+    print("START")
+    calibrate.calibrate(force=False)
