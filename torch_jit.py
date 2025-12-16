@@ -2,6 +2,7 @@ import torch
 import torch
 from src.vein_selection import build_model, pipeline
 import cv2
+import os
 
 
 # model = build_model("pretrained_unet_vein.pth", auto=False, program=False)
@@ -13,8 +14,9 @@ import cv2
 
 # model = torch.jit.load("vein_unet_ts.pt", map_location="cpu")
 model = build_model("", program=True)
-
-img = cv2.imread(r"experiment1_1\experiment\person_001_L1_IR.png", cv2.IMREAD_GRAYSCALE)
+path = r"experiment1_1\experiment\person_001_L1_IR.png"
+print("Exist", os.path.exists(path))
+img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
 out, lines = pipeline(model, img, auto=False)
 cv2.imshow("Output", out)
 cv2.waitKey(0)
