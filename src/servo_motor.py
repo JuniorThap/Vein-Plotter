@@ -76,9 +76,9 @@ class ServoWithLimit:
 
         while 0.0 <= angle <= 180.0:
 
-            if GPIO.input(LIMIT_SWITCH_PIN) == 0:
+            if GPIO.input(LIMIT_SWITCH_PIN) == 1:
                 break
-            
+
             angle += direction * step_deg
             angle = max(0.0, min(180.0, angle))
 
