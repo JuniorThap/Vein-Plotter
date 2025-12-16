@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-from hardware_config import (
+from src.hardware_config import (
     EMERGENCY, YELLOW_LIGHT, GREEN_LIGHT
 )
 
