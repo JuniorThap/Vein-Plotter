@@ -8,7 +8,6 @@ from src.hardware_config import (
     STEP_DELAY_SEC, HOMING_X_LIMIT_SWITCH_PIN, HOMING_Y_LIMIT_SWITCH_PIN,
     MOTOR_STEP
 )
-import math
 
 # GT2
 PULLEY_TEETH = 20

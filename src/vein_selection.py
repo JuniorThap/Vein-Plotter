@@ -1,34 +1,28 @@
 import torch
-# import segmentation_models_pytorch as smp
+import segmentation_models_pytorch as smp
 import cv2
 from skimage.morphology import skeletonize
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-# import onnxruntime as ort
-import numpy as np
-# import onnx
 
 
 # region Model
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-# def build_model(model_path):
-#     model = smp.Unet(
-#         encoder_name="resnet34",
-#         encoder_weights="imagenet",
-#         in_channels=1,
-#         classes=1,
-#         activation="sigmoid"
-#     ).to(device)
-#     model.load_state_dict(torch.load(model_path, map_location=device))
-#     return model
-
-# def model_session(input):
-#     sess = ort.InferenceSession('vein_unet.onnx')
-#     outputs = sess.run(None, {"input": input})
-#     return outputs[0]
+def build_model(model_path, auto=True):
+    model = smp.Unet(
+        encoder_name="resnet34",
+        encoder_weights="imagenet",
+        in_channels=1,
+        classes=1,
+        activation="sigmoid"
+    )
+    if auto:
+        model.to(device)
+    model.load_state_dict(torch.load(model_path, map_location=device))
+    return model
 
 # endregion
 
@@ -43,13 +37,11 @@ def pad_to_divisible(img, div=32):
     img = cv2.copyMakeBorder(img, 0, pad_h, 0, pad_w, cv2.BORDER_CONSTANT, value=0)
     return img, pad_h, pad_w
 
-def preparedata(img, return_pt=True):
+def preparedata(img):
     if isinstance(img, str):
         img = cv2.imread(img, cv2.IMREAD_GRAYSCALE)
     img, pad_h, pad_w = pad_to_divisible(img)
     img = torch.tensor(img).unsqueeze(0).unsqueeze(0).float() / 255.0
-    if not return_pt:
-        img = img.numpy()
     return img, (pad_h, pad_w)
 
 def depad(img, pad_h, pad_w):
@@ -575,11 +567,14 @@ def evaluate_prediction(
 # endregion
 
 
-def pipeline(model, img):
-    input, pad_info = preparedata(img, return_pt=False)
+def pipeline(model, img, auto=True):
+    input, pad_info = preparedata(img)
     pad_h, pad_w = pad_info
+    if auto:
+        input = input.to(device)
     
-    mask = np.array(model(input)[0, 0] > 0.5, dtype=np.float32)
+    with torch.no_grad():
+        mask = model(input).detach().cpu().squeeze().numpy() > 0.5
     img = depad(img, pad_h, pad_w)
     mask = depad(mask, pad_h, pad_w)
 
@@ -596,4 +591,4 @@ def pipeline(model, img):
     filtered = filter_near_hand_edge(trimmed, hand_contours[0], 50)
     top_lines =  select_top_vein(filtered, k=3)
     
-    return plot_vein(img, trimmed), top_lines
+    return plot_vein(img, filtered), top_lines
