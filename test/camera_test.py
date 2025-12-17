@@ -7,7 +7,7 @@ import time
 # -----------------------------
 # GPIO SETUP
 # -----------------------------
-IR_PIN = 18
+IR_PIN = 26
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(IR_PIN, GPIO.OUT)
 GPIO.output(IR_PIN, GPIO.LOW)  # IR OFF initially

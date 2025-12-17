@@ -456,7 +456,7 @@ def plot_vein(img, lines):
         p1 = tuple(map(int, pts[-1]))
 
         # Draw line
-        cv2.line( out_img, p0, p1, color=(0, 255, 0), thickness=2)
+        cv2.line(out_img, p0, p1, color=(0, 255, 0), thickness=2)
 
         # Midpoint for label
         mx = int((p0[0] + p1[0]) / 2)
@@ -574,6 +574,7 @@ def evaluate_prediction(
 
 
 def pipeline(model, img, auto=True):
+    cv2.imwrite("present/img1.png", img) # --------------------------
     input, pad_info = preparedata(img)
     pad_h, pad_w = pad_info
     if auto:
@@ -583,18 +584,25 @@ def pipeline(model, img, auto=True):
         mask = model(input).detach().cpu().squeeze().numpy() > 0.5
     img = depad(img, pad_h, pad_w)
     mask = depad(mask, pad_h, pad_w)
+    save_mask = np.array(mask).astype(np.uint8) * 255
+    cv2.imwrite("present/mask2.png", save_mask)
 
     lines = extract_straight_vein_segments(mask, 50)
+    cv2.imwrite("present/extract_veins3.png", plot_vein(img, lines)) # --------------------------
     lines = merge_lines(lines, max_angle=12, max_dist=5)
+    cv2.imwrite("present/merge_veins4.png", plot_vein(img, lines)) # --------------------------
 
     trimmed = []
     for l in lines:
         core = keep_straightest_part(l, min_len=50)
         if core is not None:
             trimmed.append(core)
+    cv2.imwrite("present/trim5.png", plot_vein(img, trimmed)) # --------------------------
     
     hand_contours = extract_hand_contour(img)
     filtered = filter_near_hand_edge(trimmed, hand_contours[0], 50)
+    cv2.imwrite("present/filtered6.png", plot_vein(img, filtered)) # --------------------------
     top_lines =  select_top_vein(filtered, k=3)
+    cv2.imwrite("present/top7.png", plot_vein(img, top_lines)) # --------------------------
     
     return plot_vein(img, filtered), top_lines
