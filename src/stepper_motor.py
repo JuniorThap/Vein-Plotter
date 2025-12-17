@@ -37,8 +37,10 @@ class StepperAxis:
         steps = mm * (steps_per_rev / mm_per_rev)
         return int(steps)
 
-    def move_to(self, target_mm):
-        delta = (target_mm + self.offset) - self.position_mm
+    def move_to(self, target_mm, offset=True):
+        delta = target_mm - self.position_mm
+        if offset:
+            delta += self.offset
         if delta == 0:
             return
 
@@ -72,13 +74,13 @@ class Motion2D:
 
         self.homing()
 
-    def move_to(self, x_mm, y_mm):
+    def move_to(self, x_mm, y_mm, offset=True):
         """Move both axes sequentially (safe for most mechanical systems)."""
         print(f"Moving X → {x_mm:.2f} mm")
-        self.x.move_to(x_mm)
+        self.x.move_to(x_mm, offset)
 
         print(f"Moving Y → {y_mm:.2f} mm")
-        self.y.move_to(y_mm)
+        self.y.move_to(y_mm, offset)
 
     def get_position(self):
         return self.x.position_mm, self.y.position_mm
@@ -93,4 +95,4 @@ class Motion2D:
 
     def move_dir(self, dir_x, dir_y):
         x_mm, y_mm = self.get_position()
-        self.move_to(x_mm+dir_x, y_mm+dir_y)
+        self.move_to(x_mm+dir_x, y_mm+dir_y, offset=False)
