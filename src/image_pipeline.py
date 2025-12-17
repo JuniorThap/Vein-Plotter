@@ -9,7 +9,7 @@ import RPi.GPIO as GPIO
 import cv2
 import time
 import os
-from src.vein_selection import pipeline
+from src.vein_selection import pipeline, plot_vein
 from src.hardware_config import IR_PIN
 import numpy as np
 
@@ -54,9 +54,9 @@ class Camera():
         img, lines = pipeline(model, image)
         if lines is not None:
             pts = lines[0]["points"]
-            return VeinDetectionResult([(pts[0][0], pts[0][1]), (pts[-1][0], pts[-1][1])], img)
+            return VeinDetectionResult([(pts[0][0], pts[0][1]), (pts[-1][0], pts[-1][1])], img), plot_vein(img, [lines[0]])
         else:
-            return VeinDetectionResult([(200, 200), (250, 250)], img)
+            return VeinDetectionResult([(200, 200), (250, 250)], img), plot_vein(img, [lines[0]])
     
     def detect_dot(self, image, lower=[114, 90, 3], upper=[134, 170, 83]):
         lower = np.array(lower)

@@ -4,12 +4,11 @@ from src.image_pipeline import Camera
 from src.stepper_calibration import save_calibration
 from src.vein_selection import build_model
 from src.mapping import map_vein_to_motion
+from src.vein_selection import plot_vein
 import cv2
 import numpy as np
 import time
 
-cv2.namedWindow("control", cv2.WINDOW_NORMAL)
-cv2.imshow("control", np.zeros((100, 300), dtype=np.uint8))
 
 print("Click the window. WASD to move, QE for servo, Z to quit")
 
@@ -54,7 +53,7 @@ while True:
         motion.set_offset(x, y)
     elif key == ord('1'):
         print("Detect")
-        vein = camera.detect_vein_points(model, img)
+        vein, plotted = camera.detect_vein_points(model, img)
         print("Finished Detect")
     elif key == ord('2'):
         print("Plot first dot")
