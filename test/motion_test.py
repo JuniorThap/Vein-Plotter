@@ -50,7 +50,7 @@ while True:
         motion.homing()
     elif key == ord('f'):
         x, y = motion.get_position()
-        save_calibration(x, y)
+        motion.set_offset(x, y)
     elif key == ord('1'):
         print("Detect")
         vein = camera.detect_vein_points(model, img)
