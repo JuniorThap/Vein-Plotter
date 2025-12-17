@@ -26,6 +26,7 @@ class Camera():
     def __init__(self):
         self.ir_pin = IR_PIN
         self.picam2 = Picamera2()
+        self.ir_state = True
         config = self.picam2.create_preview_configuration(
             main={"format": "RGB888", "size": (640, 480)}
         )
@@ -38,6 +39,7 @@ class Camera():
 
         GPIO.setup(IR_PIN, GPIO.OUT)
         GPIO.output(IR_PIN, GPIO.HIGH)
+
 
 
     def capture_image(self, show=False):
@@ -85,9 +87,15 @@ class Camera():
         return centers, masked
 
     def turn_ir_on(self):
+        self.ir_state = True
         GPIO.output(self.ir_pin, GPIO.HIGH)
     
     def turn_ir_off(self):
+        self.ir_state = False
         GPIO.output(self.ir_pin, GPIO.LOW)
+
+    def ir_toggle(self):
+        self.ir_state = not self.ir_state
+        GPIO.output(self.ir_pin, self.ir_state)
 
         
