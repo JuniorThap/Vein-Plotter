@@ -11,6 +11,7 @@ import time
 import os
 from src.vein_selection import pipeline
 from src.hardware_config import IR_PIN
+from src.mapping import IMG_H, IMG_W
 import numpy as np
 
 
@@ -52,8 +53,11 @@ class Camera():
 
     def detect_vein_points(self, model, image) -> VeinDetectionResult:
         img, lines = pipeline(model, image)
-        pts = lines[0]["points"]
-        return VeinDetectionResult([(pts[0][0], pts[0][1]), (pts[-1][0], pts[-1][1])], img)
+        if lines is not None:
+            pts = lines[0]["points"]
+            return VeinDetectionResult([(pts[0][0], pts[0][1]), (pts[-1][0], pts[-1][1])], img)
+        else:
+            return VeinDetectionResult([(IMG_W // 2 - 10, IMG_H // 2 - 10), (IMG_W // 2 + 10, IMG_H // 2 + 10)], img)
     
     def detect_dot(self, image, lower=[114, 90, 3], upper=[134, 170, 83]):
         lower = np.array(lower)
