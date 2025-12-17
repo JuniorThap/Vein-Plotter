@@ -46,6 +46,7 @@ while True:
         servo.sweep_until_limit(1)
     elif key == ord('c'):
         cv2.imshow("Captured", img)
+        cv2.waitKey(1)
     elif key == ord('i'):
         camera.ir_toggle()
     
@@ -61,6 +62,7 @@ while True:
         print("Detect")
         vein, plotted = camera.detect_vein_points(model, img)
         cv2.imshow("Plotted", plotted)
+        cv2.waitKey(1)
         print("Finished Detect")
     elif key == ord('2'):
         print("Plot first dot")
