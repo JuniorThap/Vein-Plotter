@@ -45,6 +45,8 @@ while True:
         print('e')
         servo.sweep_until_limit(1)
     elif key == ord('c'):
+        cv2.destroyWindow("Captured")  # safe even if it doesn't exist
+        cv2.namedWindow("Captured", cv2.WINDOW_NORMAL)
         cv2.imshow("Captured", img)
         cv2.waitKey(1)
     elif key == ord('i'):
@@ -61,8 +63,12 @@ while True:
     elif key == ord('1'):
         print("Detect")
         vein, plotted = camera.detect_vein_points(model, img)
+
+        cv2.destroyAllWindows("Plotted")
+        cv2.namedWindow("Captured", cv2.WINDOW_NORMAL)
         cv2.imshow("Plotted", plotted)
         cv2.waitKey(1)
+
         print("Finished Detect")
     elif key == ord('2'):
         print("Plot first dot")
