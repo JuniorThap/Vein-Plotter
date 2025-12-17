@@ -54,6 +54,7 @@ while True:
     elif key == ord('1'):
         print("Detect")
         vein = camera.detect_vein_points(model, img)
+        print("Finished Detect")
     elif key == ord('2'):
         print("Plot first dot")
         target = map_vein_to_motion(vein, index=0)
@@ -61,6 +62,7 @@ while True:
         servo.sweep_until_limit(direction=1)
         time.sleep(0.1)
         servo.set_angle(0)
+        print("Finished Plot")
     elif key == ord('3'):
         print("Plot second dot")
         target = map_vein_to_motion(vein, index=1)
@@ -68,6 +70,7 @@ while True:
         servo.sweep_until_limit(direction=1)
         time.sleep(0.1)
         servo.set_angle(0)
+        print("Finished Plot")
     elif key == ord('z'):
         print("Quit")
         break
