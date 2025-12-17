@@ -38,7 +38,7 @@ print("Press 'i' : Toggle IR ON / OFF")
 print("Press 'q' : Quit")
 print("===================================")
 
-model = build_model(program=True)
+model = build_model("", program=True)
 
 # -----------------------------
 # MAIN LOOP
