@@ -58,8 +58,8 @@ class StepperAxis:
         self.position_mm = target_mm
     
     def homing(self):
-        while GPIO.input(self.homing_pin) == 0:
-            self.move_to(self.position_mm-1)
+        # while GPIO.input(self.homing_pin) == 0:
+        #     self.move_to(self.position_mm-1)
         self.position_mm = 0
 
 
