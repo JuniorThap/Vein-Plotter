@@ -56,7 +56,7 @@ while True:
         time.sleep(0.3)  # debounce
     
     if key == ord('c'):
-        output = pipeline(model, frame, auto=False)
+        output = pipeline(model, cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), auto=False)
         plot, lines = cv2.imshow("Output")
         cv2.imshow(plot)
         cv2.waitKey(0)
