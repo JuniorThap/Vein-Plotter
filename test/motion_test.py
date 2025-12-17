@@ -47,6 +47,7 @@ while True:
     elif key == ord('c'):
         cv2.destroyWindow("Captured")  # safe even if it doesn't exist
         cv2.namedWindow("Captured", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("Captured", img.shape[1], img.shape[0])
         cv2.imshow("Captured", img)
         cv2.waitKey(1)
     elif key == ord('i'):
@@ -66,6 +67,7 @@ while True:
 
         cv2.destroyAllWindows("Plotted")
         cv2.namedWindow("Captured", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("Captured", plotted.shape[1], plotted.shape[0])
         cv2.imshow("Plotted", plotted)
         cv2.waitKey(1)
 
