@@ -19,10 +19,10 @@ def wait_for_button_press():
     # print("Waiting for button press...")
     # while GPIO.input(BUTTON_PIN) == GPIO.HIGH:
     #     time.sleep(0.01)
-    # print("Button pressed!")
     # while GPIO.input(BUTTON_PIN) == GPIO.LOW:
     #     time.sleep(0.01)
     cv2.waitKey(0)
+    print("Button pressed!")
 
 def reset(motion: Motion2D, servo: ServoWithLimit):
     servo.set_angle(0)
