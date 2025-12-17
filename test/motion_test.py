@@ -53,7 +53,7 @@ while True:
         save_calibration(x, y)
     elif key == ord('1'):
         print("Detect")
-        vein = camera.detect_vein_points(model, cv2.cvtColor(img, cv2.COLOR_BGR2GRAY))
+        vein = camera.detect_vein_points(model, img)
     elif key == ord('2'):
         print("Plot first dot")
         target = map_vein_to_motion(vein, index=0)
