@@ -13,10 +13,10 @@ import time
 
 print("Click the window. WASD to move, QE for servo, Z to quit")
 
-KEY_UP    = 2490368
-KEY_DOWN  = 2621440
-KEY_LEFT  = 2424832
-KEY_RIGHT = 2555904
+KEY_UP    = 82
+KEY_DOWN  = 84
+KEY_LEFT  = 81
+KEY_RIGHT = 83
 KEY_ENTER = 13        # sometimes 10 on Linux
 
 motion = Motion2D()
