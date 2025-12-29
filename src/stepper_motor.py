@@ -58,8 +58,9 @@ class StepperAxis:
             time.sleep(STEP_DELAY_SEC)
             GPIO.output(self.step_pin, GPIO.LOW)
             time.sleep(STEP_DELAY_SEC)
+        
+        self.position_mm += delta
 
-        self.position_mm = target_mm
 
     def set_home(self):
         self.position_mm = 0
@@ -109,7 +110,6 @@ class Motion2D:
     
     def get_offset(self):
         return self.x.offset, self.y.offset
-    
 
     def save_offset(self):
         tmp = self.offset_file + ".tmp"
