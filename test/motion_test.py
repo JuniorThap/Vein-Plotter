@@ -57,8 +57,13 @@ while True:
         camera.ir_toggle()
     
     elif key == ord('h'):
-        print("Homing")
+        print("Set Home")
         motion.set_home()
+
+    elif key == ord('g'):
+        print("Homing")
+        motion.go_home()
+    
     elif key == ord('f'):
         x, y = motion.get_position()
         save_calibration(x, y)

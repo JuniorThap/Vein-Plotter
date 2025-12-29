@@ -91,6 +91,10 @@ class Motion2D:
     def set_home(self):
         self.x.set_home()
         self.y.set_home()
+
+    def go_home(self):
+        self.x.go_home()
+        self.y.go_home()
     
     def set_offset(self, offset_x, offset_y):
         self.x.offset = offset_x
