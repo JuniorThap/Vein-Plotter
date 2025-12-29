@@ -1,11 +1,11 @@
 # hardware_config.py
 
 # ---------------- INPUT PINS ----------------
-BUTTON_PIN = 25
+BUTTON_PIN = 26
 LIMIT_SWITCH_PIN = 4    # Servo limit switch (active LOW)
 
 # ---------------- Camera -------------------
-IR_PIN = 26
+IR_PIN = 17
 
 # ---------------- STEPPER X ----------------
 STEPPER_X_DIR = 12
