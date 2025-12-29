@@ -74,7 +74,7 @@ class Motion2D:
     """Two-axis (X,Y) movement controller."""
 
     def __init__(self):
-        self.offset_file = "calibration_offset.json"
+        self.offset_file = "src/calibration_offset.json"
         self.offset_data = self.load_offset(self.offset_file)
         
 
