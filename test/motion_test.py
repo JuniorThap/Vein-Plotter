@@ -1,6 +1,7 @@
 from src.stepper_motor import Motion2D
 from src.servo_motor import ServoWithLimit
 from src.image_pipeline import Camera
+from src.display_emer import UI
 from src.stepper_calibration import save_calibration
 from src.vein_selection import build_model
 from src.mapping import map_vein_to_motion
@@ -15,7 +16,9 @@ print("Click the window. WASD to move, QE for servo, Z to quit")
 motion = Motion2D()
 servo = ServoWithLimit()
 camera = Camera()
+display = UI()
 
+display.green_on()
 model = build_model("", program=True)
 
 
@@ -53,7 +56,6 @@ while True:
     elif key == ord('i'):
         camera.ir_toggle()
     
-
     elif key == ord('h'):
         print("Homing")
         motion.homing()
@@ -63,6 +65,7 @@ while True:
         motion.set_offset(x, y)
     elif key == ord('1'):
         print("Detect")
+        display.yellow_on()
         vein, plotted = camera.detect_vein_points(model, img)
 
         cv2.destroyWindow("Plotted")
@@ -72,22 +75,29 @@ while True:
         cv2.waitKey(1)
 
         print("Finished Detect")
+        display.yellow_off()
     elif key == ord('2'):
         print("Plot first dot")
+        display.yellow_on()
         target = map_vein_to_motion(vein, index=0)
         motion.move_to(target.x_mm, target.y_mm)
         servo.sweep_until_limit(direction=1)
         time.sleep(0.1)
         servo.set_angle(0)
         print("Finished Plot")
+        display.yellow_off()
     elif key == ord('3'):
         print("Plot second dot")
+        display.yellow_on()
         target = map_vein_to_motion(vein, index=1)
         motion.move_to(target.x_mm, target.y_mm)
         servo.sweep_until_limit(direction=1)
         time.sleep(0.1)
         servo.set_angle(0)
         print("Finished Plot")
+        display.yellow_off()
+
+    elif 
     elif key == ord('z'):
         print("Quit")
         break

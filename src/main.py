@@ -8,7 +8,7 @@ from src.servo_motor import ServoWithLimit
 from src.vein_selection import build_model
 from src.image_pipeline import Camera
 from src.stepper_calibration import StepperCalibration
-from src.display_emer import Display
+from src.display_emer import UI
 from src.mapping import map_vein_to_motion
 import cv2
 import os
@@ -103,7 +103,7 @@ def main():
     servo = ServoWithLimit()
     camera = Camera()
     calibrate = StepperCalibration(motion, servo, camera)
-    display = Display()
+    display = UI()
 
     display.green_on()
     model = build_model(r"pretrained_unet_vein.p2", program=True)

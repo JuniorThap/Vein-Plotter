@@ -1,22 +1,25 @@
 import RPi.GPIO as GPIO
 from src.hardware_config import (
-    EMERGENCY, YELLOW_LIGHT, GREEN_LIGHT
+    EMERGENCY, YELLOW_LIGHT, GREEN_LIGHT, BUTTON_PIN
 )
 
-class Display:
+class UI:
     def __init__(self):
         self.emergency = EMERGENCY
         self.yellow_light = YELLOW_LIGHT
         self.green_light = GREEN_LIGHT
+        self.button = BUTTON_PIN
 
         GPIO.setmode(GPIO.BCM)
 
         # Emergency button (NC or NO → pull-up recommended)
         GPIO.setup(self.emergency, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         # Indicator lights
         GPIO.setup(self.yellow_light, GPIO.OUT)
         GPIO.setup(self.green_light, GPIO.OUT)
+
 
         # Default state
         self.all_off()
@@ -48,6 +51,9 @@ class Display:
         Emergency button active LOW
         """
         return GPIO.input(self.emergency) == GPIO.LOW
+    
+    def is_button_pressed(self):
+        return GPIO.input(self.button) == GPIO.LOW
 
     def update(self):
         """

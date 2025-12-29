@@ -37,27 +37,6 @@ class StepperAxis:
         steps = mm * (steps_per_rev / mm_per_rev)
         return int(steps)
 
-    def move_to(self, target_mm, offset=True):
-        delta = target_mm - self.position_mm
-        if offset:
-            delta += self.offset
-        if delta == 0:
-            return
-
-        direction = GPIO.HIGH if delta > 0 else GPIO.LOW
-        if self.reverse:
-            direction = GPIO.LOW if direction == GPIO.HIGH else GPIO.HIGH
-        steps = self.mm2step(abs(delta))
-
-        GPIO.output(self.dir_pin, direction)
-
-        for _ in range(steps):
-            GPIO.output(self.step_pin, GPIO.HIGH)
-            time.sleep(STEP_DELAY_SEC)
-            GPIO.output(self.step_pin, GPIO.LOW)
-            time.sleep(STEP_DELAY_SEC)
-
-        self.position_mm = target_mm
     
     def homing(self):
         # while GPIO.input(self.homing_pin) == 0:
