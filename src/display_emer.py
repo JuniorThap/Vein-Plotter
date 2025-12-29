@@ -53,7 +53,7 @@ class UI:
         return GPIO.input(self.emergency) == GPIO.LOW
     
     def is_button_pressed(self):
-        return GPIO.input(self.button) == GPIO.LOW
+        return GPIO.input(self.button) == GPIO.HIGH
 
     def update(self):
         """
