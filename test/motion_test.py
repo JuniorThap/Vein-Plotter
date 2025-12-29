@@ -76,9 +76,9 @@ while True:
         motion.set_offset(x, y)
 
     elif key == KEY_UP:
-        motion.move_offset(0, 1)
-    elif key == KEY_DOWN:
         motion.move_offset(0, -1)
+    elif key == KEY_DOWN:
+        motion.move_offset(0, 1)
     elif key == KEY_LEFT:
         motion.move_offset(-1, 0)
     elif key == KEY_RIGHT:
