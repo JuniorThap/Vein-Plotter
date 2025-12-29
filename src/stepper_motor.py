@@ -8,6 +8,8 @@ from src.hardware_config import (
     STEP_DELAY_SEC, HOMING_X_LIMIT_SWITCH_PIN, HOMING_Y_LIMIT_SWITCH_PIN,
     MOTOR_STEP
 )
+import json
+import os
 
 # GT2
 PULLEY_TEETH = 20
@@ -16,14 +18,14 @@ BELT_PITCH = 2
 class StepperAxis:
     """Represent a single axis (X or Y stepper)."""
 
-    def __init__(self, dir_pin, step_pin, homing_pin, microsteps, motor_steps, reverse=False):
+    def __init__(self, dir_pin, step_pin, homing_pin, microsteps, motor_steps, offset, reverse=False):
         self.dir_pin = dir_pin
         self.step_pin = step_pin
         self.homing_pin = homing_pin
         self.microsteps = microsteps
         self.motor_steps = motor_steps
         self.position_mm = 0.0
-        self.offset = 0.0
+        self.offset = offset
         self.reverse = reverse
 
         GPIO.setmode(GPIO.BCM)
@@ -72,10 +74,27 @@ class Motion2D:
     """Two-axis (X,Y) movement controller."""
 
     def __init__(self):
-        self.x = StepperAxis(STEPPER_X_DIR, STEPPER_X_STEP, HOMING_X_LIMIT_SWITCH_PIN, MICROSTEP_X, MOTOR_STEP)
-        self.y = StepperAxis(STEPPER_Y_DIR, STEPPER_Y_STEP, HOMING_Y_LIMIT_SWITCH_PIN, MICROSTEP_Y, MOTOR_STEP, reverse=True)
+        self.offset_file = "calibration_offset.json"
+        self.offset_data = self.load_offset(self.offset_file)
+        
+
+        self.x = StepperAxis(STEPPER_X_DIR, STEPPER_X_STEP, HOMING_X_LIMIT_SWITCH_PIN, MICROSTEP_X, MOTOR_STEP, offset=self.offset_data["offset_x_mm"])
+        self.y = StepperAxis(STEPPER_Y_DIR, STEPPER_Y_STEP, HOMING_Y_LIMIT_SWITCH_PIN, MICROSTEP_Y, MOTOR_STEP, offset=self.offset_data["offset_y_mm"], reverse=True)
 
         self.set_home()
+
+    def set_offset(self, offset_x, offset_y):
+        self.offset_data["offset_x_mm"] = offset_x
+        self.offset_data["offset_y_mm"] = offset_y
+
+        self.x.offset = offset_x
+        self.y.offset = offset_y
+    
+    def load_offset(self, offset_file):
+        with open(offset_file, "r") as f:
+            offset_data = json.load(f)
+        print("Offset:", offset_data)
+        return offset_data
 
     def move_to(self, x_mm, y_mm, offset=True):
         """Move both axes sequentially (safe for most mechanical systems)."""
@@ -88,6 +107,18 @@ class Motion2D:
     def get_position(self):
         return self.x.position_mm, self.y.position_mm
     
+    def get_offset(self):
+        return self.x.offset, self.y.offset
+    
+
+    def save_offset(self):
+        tmp = self.offset_file + ".tmp"
+        with open(tmp, "w") as f:
+            json.dump(self.offset_data, f, indent=4)
+        
+        os.replace(tmp, self.offset_file)
+        print("Save Offset at", self.offset_file)
+
     def set_home(self):
         self.x.set_home()
         self.y.set_home()
@@ -95,10 +126,11 @@ class Motion2D:
     def go_home(self):
         self.x.go_home()
         self.y.go_home()
-    
-    def set_offset(self, offset_x, offset_y):
-        self.x.offset = offset_x
-        self.y.offset = offset_y
+
+    def move_offset(self, dir_x, dir_y):
+        offset_x, offset_y = self.get_offset()
+        self.set_offset(offset_x+dir_x, offset_y+dir_y)
+        print("New Offset", self.get_offset())
 
     def move_dir(self, dir_x, dir_y):
         x_mm, y_mm = self.get_position()

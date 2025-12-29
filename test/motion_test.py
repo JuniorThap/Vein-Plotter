@@ -13,6 +13,12 @@ import time
 
 print("Click the window. WASD to move, QE for servo, Z to quit")
 
+KEY_UP    = 2490368
+KEY_DOWN  = 2621440
+KEY_LEFT  = 2424832
+KEY_RIGHT = 2555904
+KEY_ENTER = 13        # sometimes 10 on Linux
+
 motion = Motion2D()
 servo = ServoWithLimit()
 camera = Camera()
@@ -25,7 +31,7 @@ model = build_model("", program=True)
 while True:
     img = camera.capture_image()
     cv2.imshow("Camera", img)
-    key = cv2.waitKey(1) & 0xFF
+    key = cv2.waitKey(1) & 0xFFFFFFFF
 
     dx, dy = 0, 0
 
@@ -68,6 +74,18 @@ while True:
         x, y = motion.get_position()
         save_calibration(x, y)
         motion.set_offset(x, y)
+
+    elif key == KEY_UP:
+        motion.move_offset(0, 1)
+    elif key == KEY_DOWN:
+        motion.move_offset(0, -1)
+    elif key == KEY_LEFT:
+        motion.move_offset(-1, 0)
+    elif key == KEY_RIGHT:
+        motion.move_offset(1, 0)
+    elif key == KEY_ENTER:
+        motion.save_offset()
+    
     elif key == ord('1'):
         print("Detect")
         ui.yellow_on()
@@ -139,6 +157,7 @@ while True:
         print("Quit")
         break
 
+    
 
     if dx != 0 or dy != 0:
         motion.move_dir(dx, dy)
