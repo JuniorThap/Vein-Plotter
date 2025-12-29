@@ -36,11 +36,35 @@ class StepperAxis:
         steps_per_rev = self.microsteps * self.motor_steps
         steps = mm * (steps_per_rev / mm_per_rev)
         return int(steps)
-
     
-    def homing(self):
-        # while GPIO.input(self.homing_pin) == 0:
-        #     self.move_to(self.position_mm-1)
+    def move_to(self, target_mm, offset=True):
+        delta = target_mm - self.position_mm
+        if offset:
+            delta += self.offset
+        if delta == 0:
+            return
+
+        direction = GPIO.HIGH if delta > 0 else GPIO.LOW
+        if self.reverse:
+            direction = GPIO.LOW if direction == GPIO.HIGH else GPIO.HIGH
+        steps = self.mm2step(abs(delta))
+
+        GPIO.output(self.dir_pin, direction)
+
+        for _ in range(steps):
+            GPIO.output(self.step_pin, GPIO.HIGH)
+            time.sleep(STEP_DELAY_SEC)
+            GPIO.output(self.step_pin, GPIO.LOW)
+            time.sleep(STEP_DELAY_SEC)
+
+        self.position_mm = target_mm
+
+    def set_home(self):
+        self.position_mm = 0
+
+    def go_home(self):
+        while GPIO.input(self.homing_pin) == 0:
+            self.move_to(self.position_mm-1, offset=False)
         self.position_mm = 0
 
 
@@ -51,7 +75,7 @@ class Motion2D:
         self.x = StepperAxis(STEPPER_X_DIR, STEPPER_X_STEP, HOMING_X_LIMIT_SWITCH_PIN, MICROSTEP_X, MOTOR_STEP)
         self.y = StepperAxis(STEPPER_Y_DIR, STEPPER_Y_STEP, HOMING_Y_LIMIT_SWITCH_PIN, MICROSTEP_Y, MOTOR_STEP, reverse=True)
 
-        self.homing()
+        self.set_home()
 
     def move_to(self, x_mm, y_mm, offset=True):
         """Move both axes sequentially (safe for most mechanical systems)."""
@@ -64,9 +88,9 @@ class Motion2D:
     def get_position(self):
         return self.x.position_mm, self.y.position_mm
     
-    def homing(self):
-        self.x.homing()
-        self.y.homing()
+    def set_home(self):
+        self.x.set_home()
+        self.y.set_home()
     
     def set_offset(self, offset_x, offset_y):
         self.x.offset = offset_x

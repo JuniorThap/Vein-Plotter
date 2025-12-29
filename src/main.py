@@ -26,7 +26,7 @@ def wait_for_button_press():
 
 def reset(motion: Motion2D, servo: ServoWithLimit):
     servo.set_angle(0)
-    motion.homing()
+    motion.set_home()
 
 def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera, model, save_dir, person_id, side):
     print("[-----START NEW CYCLE-----]")
@@ -65,7 +65,7 @@ def perform_cycle(motion: Motion2D, servo: ServoWithLimit, camera: Camera, model
     print("[11. CLOSE IR AND HOMING]")
     camera.turn_ir_off()
     time.sleep(4)
-    motion.homing()
+    motion.set_home()
 
     img = camera.capture_image()
 
@@ -119,7 +119,7 @@ def main():
     display.yellow_off()
 
     servo.set_angle(0)
-    motion.homing()
+    motion.set_home()
 
     try:
         while True:

@@ -58,7 +58,7 @@ class StepperCalibration:
 
         # get back to position
         self.servo.set_angle(0)
-        self.motion.homing()
+        self.motion.set_home()
 
         self.camera.turn_ir_off()
         time.sleep(4)
@@ -95,6 +95,6 @@ if __name__ == "__main__":
     calibrate = StepperCalibration(motion, servo, camera)
 
     print("Homing")
-    motion.homing()
+    motion.set_home()
     print("Start Calibration in 5")
     calibrate.calibrate(force=True)
