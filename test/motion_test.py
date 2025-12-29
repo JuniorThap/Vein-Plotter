@@ -65,7 +65,7 @@ while True:
         print("Detect")
         vein, plotted = camera.detect_vein_points(model, img)
 
-        cv2.destroyAllWindows("Plotted")
+        cv2.destroyWindow("Plotted")
         cv2.namedWindow("Plotted", cv2.WINDOW_NORMAL)
         cv2.resizeWindow("Plotted", plotted.shape[1], plotted.shape[0])
         cv2.imshow("Plotted", plotted)
