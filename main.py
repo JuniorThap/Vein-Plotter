@@ -2,10 +2,10 @@ from src.stepper_motor import Motion2D
 from src.servo_motor import ServoWithLimit
 from src.image_pipeline import Camera
 from src.display_emer import UI
+from src.experiment import Experiment
 from src.stepper_calibration import save_calibration
 from src.vein_selection import build_model
 from src.mapping import map_vein_to_motion
-from src.vein_selection import plot_vein
 import cv2
 import numpy as np
 import time
@@ -27,13 +27,19 @@ ui = UI()
 ui.green_on()
 model = build_model("", program=True)
 
+experiment = False
+save_dirs = ["img_log", "experiment2"]
+log = Experiment(save_dirs[0], toggle_hand_side=False)
+experiment2 = Experiment(save_dirs[1], toggle_hand_side=True)
 
+# Main Control
 while True:
-    img = camera.capture_image()
+    img, gray = camera.capture_image()
     cv2.imshow("Camera", img)
     key = cv2.waitKey(1) & 0xFFFFFFFF
-
     dx, dy = 0, 0
+
+    log_object = experiment2 if experiment else log
 
     if key == ord('w'):
         print('w')
@@ -58,6 +64,7 @@ while True:
         cv2.namedWindow("Captured", cv2.WINDOW_NORMAL)
         cv2.resizeWindow("Captured", img.shape[1], img.shape[0])
         cv2.imshow("Captured", img)
+        cv2.imwrite("", img)
         cv2.waitKey(1)
     elif key == ord('i'):
         camera.ir_toggle()
@@ -85,11 +92,17 @@ while True:
         motion.move_offset(1, 0)
     elif key == KEY_ENTER:
         motion.save_offset()
+
+    elif key == ord('p'):
+        experiment = not experiment
     
     elif key == ord('1'):
         print("Detect")
         ui.yellow_on()
-        vein, plotted = camera.detect_vein_points(model, img)
+        vein, plotted = camera.detect_vein_points(model, gray)
+
+        start_file_name = log_object.get_start_filename()
+        cv2.imwrite(start_file_name + "_plotted.png")
 
         cv2.destroyWindow("Plotted")
         cv2.namedWindow("Plotted", cv2.WINDOW_NORMAL)
@@ -123,7 +136,7 @@ while True:
     elif ui.is_button_pressed():
         print("Detect")
         ui.yellow_on()
-        vein, plotted = camera.detect_vein_points(model, img)
+        vein, plotted = camera.detect_vein_points(model, gray)
         cv2.destroyWindow("Plotted")
         cv2.namedWindow("Plotted", cv2.WINDOW_NORMAL)
         cv2.resizeWindow("Plotted", plotted.shape[1], plotted.shape[0])

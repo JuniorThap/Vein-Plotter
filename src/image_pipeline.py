@@ -44,13 +44,13 @@ class Camera():
 
     def capture_image(self, show=False):
         frame = self.picam2.capture_array()
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         if show:
             cv2.imshow("Camera", frame)
             cv2.waitKey(1)
 
-        return frame
+        return frame, gray
 
     def detect_vein_points(self, model, image) -> VeinDetectionResult:
         img, lines = pipeline(model, image)
@@ -58,6 +58,7 @@ class Camera():
             pts = lines[0]["points"]
             return VeinDetectionResult([(pts[0][0], pts[0][1]), (pts[-1][0], pts[-1][1])], img), plot_vein(img, [lines[0]])
         else:
+            print("Do not detect line!")
             return VeinDetectionResult([(200, 200), (250, 250)], img), plot_vein(img, [lines[0]])
     
     def detect_dot(self, image, lower=[114, 90, 3], upper=[134, 170, 83]):
