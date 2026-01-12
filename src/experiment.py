@@ -9,6 +9,7 @@ class Experiment:
         self.hand_index = 0
     
     def get_next_person_id(self, folder):
+        os.makedirs(folder, exist_ok=True)
         max_id = 0
         for f in os.listdir(folder):
             if f.startswith("person_") and f[7:10].isdigit():
