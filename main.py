@@ -102,7 +102,7 @@ while True:
         vein, plotted = camera.detect_vein_points(model, gray)
 
         start_file_name = log_object.get_start_filename()
-        cv2.imwrite(start_file_name + "_plotted.png")
+        cv2.imwrite(start_file_name + "_plotted.png", plotted)
 
         cv2.destroyWindow("Plotted")
         cv2.namedWindow("Plotted", cv2.WINDOW_NORMAL)
