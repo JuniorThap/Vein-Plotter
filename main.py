@@ -67,6 +67,7 @@ while True:
 
         start_file_name = log_object.get_start_filename()
         cv2.imwrite(start_file_name + "_visible.png", img)
+        log_object.update_dir()
 
         cv2.waitKey(1)
     elif key == ord('i'):
