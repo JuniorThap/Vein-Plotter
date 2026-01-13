@@ -59,7 +59,7 @@ class Camera():
             return VeinDetectionResult([(pts[0][0], pts[0][1]), (pts[-1][0], pts[-1][1])], img), plot_vein(img, [lines[0]])
         else:
             print("Do not detect line!")
-            return VeinDetectionResult([(200, 200), (250, 250)], img), plot_vein(img, [lines[0]])
+            return VeinDetectionResult([(200, 200), (250, 250)], img), plot_vein(img, None)
     
     def detect_dot(self, image, lower=[114, 90, 3], upper=[134, 170, 83]):
         lower = np.array(lower)
