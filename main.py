@@ -64,7 +64,10 @@ while True:
         cv2.namedWindow("Captured", cv2.WINDOW_NORMAL)
         cv2.resizeWindow("Captured", img.shape[1], img.shape[0])
         cv2.imshow("Captured", img)
-        cv2.imwrite("", img)
+
+        start_file_name = log_object.get_start_filename()
+        cv2.imwrite(start_file_name + "_visible.png", img)
+
         cv2.waitKey(1)
     elif key == ord('i'):
         camera.ir_toggle()
