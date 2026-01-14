@@ -1,12 +1,12 @@
 import os
 
 class Experiment:
-    def __init__(self, save_dir="experiment2", toggle_hand_side=True):
+    def __init__(self, save_dir="experiment2", toggle_hand_side=True, start_hand_index=0):
         self.save_dir = save_dir
         self.PERSON_ID = self.get_next_person_id(save_dir)
         self.toggle_hand_side = toggle_hand_side
         self.hand_side = ["L1", "R1"]
-        self.hand_index = 0
+        self.hand_index = start_hand_index
     
     def get_next_person_id(self, folder):
         os.makedirs(folder, exist_ok=True)

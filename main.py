@@ -31,7 +31,7 @@ model = build_model("", program=True)
 experiment = True
 save_dirs = ["img_log", "experiment2"]
 log = Experiment(save_dirs[0], toggle_hand_side=False)
-experiment2 = Experiment(save_dirs[1], toggle_hand_side=True)
+experiment2 = Experiment(save_dirs[1], toggle_hand_side=True, start_hand_index=1)
 df = pd.read_csv("ex2_points.csv")
 
 # Main Control
