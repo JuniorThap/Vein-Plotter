@@ -32,7 +32,8 @@ class Camera():
         )
         self.picam2.set_controls({
             "AfMode": controls.AfModeEnum.Manual,
-            "LensPosition": 1   # ~15–20 cm (adjust if needed)
+            "LensPosition": 1,   # ~15–20 cm (adjust if needed)
+            "Contrast": 1.5
         })
         self.picam2.configure(config)
         self.picam2.start()
