@@ -9,6 +9,7 @@ from src.mapping import map_vein_to_motion
 import cv2
 import numpy as np
 import time
+import pandas as pd
 
 
 print("Click the window. WASD to move, QE for servo, Z to quit")
@@ -31,6 +32,7 @@ experiment = False
 save_dirs = ["img_log", "experiment2"]
 log = Experiment(save_dirs[0], toggle_hand_side=False)
 experiment2 = Experiment(save_dirs[1], toggle_hand_side=True)
+df = pd.read_csv("ex2_points.csv")
 
 # Main Control
 while True:
@@ -106,6 +108,10 @@ while True:
         vein, plotted = camera.detect_vein_points(model, gray)
 
         start_file_name = log_object.get_start_filename()
+        new_row = pd.DataFrame({"Name": [start_file_name], "Plots": [vein.points_px], "Visibles":[]})
+        df = pd.concat([df, new_row], ignore_index=True)
+        df.to_csv("ex2_points", index=False)
+
         cv2.imwrite(start_file_name + "_plotted.png", plotted)
 
         cv2.destroyWindow("Plotted")
