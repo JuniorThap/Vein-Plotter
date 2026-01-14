@@ -101,6 +101,7 @@ while True:
 
     elif key == ord('p'):
         experiment = not experiment
+        print("Is experiment:", experiment)
     
     elif key == ord('1'):
         print("Detect")
@@ -108,9 +109,6 @@ while True:
         vein, plotted = camera.detect_vein_points(model, gray)
 
         start_file_name = log_object.get_start_filename()
-        new_row = pd.DataFrame({"Name": [start_file_name], "Plots": [vein.points_px], "Visibles":[]})
-        df = pd.concat([df, new_row], ignore_index=True)
-        df.to_csv("ex2_points", index=False)
 
         cv2.imwrite(start_file_name + "_plotted.png", plotted)
 
@@ -143,15 +141,22 @@ while True:
         print("Finished Plot")
         ui.yellow_off()
 
-    elif ui.is_button_pressed():
+    elif ui.is_button_pressed() or key == ord('4'):
+        start = time.perf_counter()
         print("Detect")
         ui.yellow_on()
         vein, plotted = camera.detect_vein_points(model, gray)
+
+        start_file_name = log_object.get_start_filename()
+
+        cv2.imwrite(start_file_name + "_plotted.png", plotted)
+
         cv2.destroyWindow("Plotted")
         cv2.namedWindow("Plotted", cv2.WINDOW_NORMAL)
         cv2.resizeWindow("Plotted", plotted.shape[1], plotted.shape[0])
         cv2.imshow("Plotted", plotted)
         cv2.waitKey(1)
+
         print("Finished Detect")
         ui.yellow_off()
 
@@ -174,6 +179,12 @@ while True:
         print("Finished Plot")
         ui.yellow_off()
 
+        print("Save INFO")
+        duration = time.perf_counter() - start
+        print("Duration:", duration, "s")
+        new_row = pd.DataFrame({"Name": [start_file_name], "Plots": [vein.points_px], "Visibles":[None], "Time":[duration]})
+        df = pd.concat([df, new_row], ignore_index=True)
+        df.to_csv("ex2_points", index=False)
         print("ALL DONE!")
 
     elif key == ord('z'):
