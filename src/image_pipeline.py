@@ -35,7 +35,7 @@ class Camera():
             "LensPosition": 1,   # ~15–20 cm (adjust if needed)
             "Contrast": 1.5,
             "ExposureTime": 12000,
-            "ExposureValue": -4
+            "ExposureValue": -8
         })
         self.picam2.configure(config)
         self.picam2.start()
