@@ -34,6 +34,7 @@ class Camera():
             "AfMode": controls.AfModeEnum.Manual,
             "LensPosition": 1,   # ~15–20 cm (adjust if needed)
             "Contrast": 1.5,
+            "ExposureTime": 12000,
             "ExposureValue": -2
         })
         self.picam2.configure(config)
