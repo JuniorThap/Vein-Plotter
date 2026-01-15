@@ -37,7 +37,7 @@ class Camera():
             "AfMode": controls.AfModeEnum.Manual,
             "LensPosition": 1,   # ~15–20 cm (adjust if needed)
             "Contrast": 1.5,
-            "ExposureTime": 5000,
+            "ExposureTime": 2000,
             "AnalogueGain": 1.0
             # "ExposureValue": -8,
             # "Brightness": 0,
