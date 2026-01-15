@@ -36,11 +36,11 @@ class Camera():
         self.picam2.set_controls({
             "AfMode": controls.AfModeEnum.Manual,
             # "LensPosition": 1,   # ~15–20 cm (adjust if needed)
-            "Contrast": 2,
+            "Contrast": 8.0,
             # "ExposureTime": 2000,
             # "AnalogueGain": 1.0
-            "Saturation": 0.0,
-            "Sharpness": 2.0,
+            # "Saturation": 0.0,
+            "Sharpness": 3.0,
             "ExposureValue": -8,
             "Brightness": -1,
             "AeMeteringMode":1
