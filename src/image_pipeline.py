@@ -38,7 +38,7 @@ class Camera():
             "LensPosition": 1,   # ~15–20 cm (adjust if needed)
             "Contrast": 1.5,
             "ExposureTime": 12000,
-            "ExposureValue": 0,
+            "ExposureValue": -4,
             "Brightness": -1,
             "AeMeteringMode":1
         })
