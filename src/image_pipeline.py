@@ -35,13 +35,13 @@ class Camera():
         )
         self.picam2.set_controls({
             "AfMode": controls.AfModeEnum.Manual,
-            "LensPosition": 1,   # ~15–20 cm (adjust if needed)
+            # "LensPosition": 1,   # ~15–20 cm (adjust if needed)
             "Contrast": 1.5,
-            "ExposureTime": 2000,
-            "AnalogueGain": 1.0
-            # "ExposureValue": -8,
-            # "Brightness": 0,
-            # "AeMeteringMode":1
+            # "ExposureTime": 2000,
+            # "AnalogueGain": 1.0
+            "ExposureValue": -8,
+            "Brightness": -1,
+            "AeMeteringMode":1
         })
         self.picam2.configure(config)
         self.picam2.start()
