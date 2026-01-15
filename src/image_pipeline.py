@@ -3,9 +3,12 @@
 
 from dataclasses import dataclass
 from typing import Any, List, Tuple
-from picamera2 import Picamera2, Preview
-from libcamera import controls
-import RPi.GPIO as GPIO
+try:
+    from picamera2 import Picamera2, Preview
+    from libcamera import controls
+    import RPi.GPIO as GPIO
+except:
+    pass
 import cv2
 import time
 import os

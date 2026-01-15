@@ -28,7 +28,7 @@ ui = UI()
 ui.green_on()
 model = build_model("", program=True)
 
-experiment = True
+experiment = False
 save_dirs = ["img_log", "experiment2"]
 log = Experiment(save_dirs[0], toggle_hand_side=False)
 experiment2 = Experiment(save_dirs[1], toggle_hand_side=True, start_hand_index=1)
