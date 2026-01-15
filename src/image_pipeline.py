@@ -40,7 +40,7 @@ class Camera():
             # "ExposureTime": 2000,
             # "AnalogueGain": 1.0
             # "Saturation": 0.0,
-            "Sharpness": 3.0,
+            # "Sharpness": 3.0,
             "ExposureValue": -8,
             "Brightness": -1,
             "AeMeteringMode":1
