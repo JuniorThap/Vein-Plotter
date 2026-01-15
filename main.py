@@ -32,7 +32,7 @@ experiment = False
 save_dirs = ["img_log", "experiment2"]
 log = Experiment(save_dirs[0], toggle_hand_side=False)
 experiment2 = Experiment(save_dirs[1], toggle_hand_side=True, start_hand_index=1)
-df = pd.read_csv("ex2_points.csv")
+df = pd.read_csv("experiment2_points.csv")
 
 # Main Control
 while True:
@@ -184,7 +184,7 @@ while True:
         print("Duration:", duration, "s")
         new_row = pd.DataFrame({"Name": [start_file_name], "Plots": [vein.points_px], "Visibles":[None], "Time":[duration]})
         df = pd.concat([df, new_row], ignore_index=True)
-        df.to_csv("ex2_points.csv", index=False)
+        df.to_csv("experiment2_points.csv", index=False)
         print("ALL DONE!")
 
     elif key == ord('z'):
