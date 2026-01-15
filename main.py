@@ -184,7 +184,7 @@ while True:
         print("Duration:", duration, "s")
         new_row = pd.DataFrame({"Name": [start_file_name], "Plots": [vein.points_px], "Visibles":[None], "Time":[duration]})
         df = pd.concat([df, new_row], ignore_index=True)
-        df.to_csv("ex2_points", index=False)
+        df.to_csv("ex2_points.csv", index=False)
         print("ALL DONE!")
 
     elif key == ord('z'):
