@@ -39,8 +39,8 @@ class Camera():
             "Contrast": 1.5,
             # "ExposureTime": 2000,
             # "AnalogueGain": 1.0
-            "ExposureValue": -8,
-            "Brightness": -1,
+            "ExposureValue": -6,
+            "Brightness": -0.8,
             "AeMeteringMode":1
         })
         self.picam2.configure(config)
